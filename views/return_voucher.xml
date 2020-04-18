@@ -38,7 +38,7 @@
                                 string="Reviewed"/>
                         <button name="action_approve" states="reviewed" class="oe_highlight" type="object"
                                 groups="Return_Order.return_group_supervisor,Return_Order.return_group_manager"
-                                string="return"/>
+                                string="Return Order"/>
                         <button name="action_draft" type="object" string="reset to draft"
                                 states="reviewed,approve"/>
                         <field name="state" widget="statusbar"/>
@@ -77,7 +77,7 @@
                                 string="Reviewed"/>
                         <button name="action_approve" states="reviewed" class="oe_highlight" type="object"
                                 groups="Return_Order.return_group_supervisor,Return_Order.return_group_manager"
-                                string="return"/>
+                                string="Return Order"/>
                         <button name="action_draft" type="object" string="reset to draft"
                                 states="reviewed,approve"/>
                         <field name="state" widget="statusbar"/>
