@@ -63,13 +63,13 @@
 
         <!-- Actions Must be Change-->
         <menuitem id="menu_return_operation" name="Operations" parent="menu_return_root" sequence="2"/>
-        <menuitem id="menu_return_credit_note" name="to credit note" action="action_request_return_voucher_view"
+        <menuitem id="menu_return_credit_note" name="to credit note" action="action_return_order_view"
                   parent="menu_return_operation" sequence="1"/>
         <menuitem id="menu_return_to_receipt" name="to receipt" parent="menu_return_operation"
-                  action="action_request_return_voucher_view" sequence="2"/>
+                  action="action_return_order_view" sequence="2"/>
         <!-- Action Must be Change-->
         <menuitem id="menu_return_reporting" name="Reporting" parent="menu_return_root"
-                  action="action_request_return_voucher_view" sequence="3"/>
+                  action="action_return_order_view" sequence="3"/>
 
         <menuitem id="menu_return_configuration" name="configuration" parent="menu_return_root" sequence="4"/>
         <menuitem id="menu_return_configuration_settings" name="Settings" action="return_order_config"
