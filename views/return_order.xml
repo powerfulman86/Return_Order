@@ -1,41 +1,125 @@
 <odoo>
     <data>
         <record id="view_return_order_tree" model="ir.ui.view">
-            <field name="name">return order</field>
+            <field name="name">view.return.order.tree</field>
             <field name="model">return.order</field>
             <field name="arch" type="xml">
                 <tree string="Return Order">
                     <field name="name"/>
-                    <field name="eng_description"/>
-                    <field name="ara_description"/>
+                    <field name="sale_id"/>
+                    <field name="partner_id"/>
+                    <field name="customer_ref"/>
+                    <field name="sale_date"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+        <record id="view_request_return_order_tree" model="ir.ui.view">
+            <field name="name">view.return.order.tree</field>
+            <field name="model">return.order</field>
+            <field name="arch" type="xml">
+                <tree string="Return Order">
+                    <field name="name"/>
+                    <field name="sale_id"/>
+                    <field name="partner_id"/>
+                    <field name="customer_ref"/>
+                    <field name="sale_date"/>
+                    <field name="state"/>
                 </tree>
             </field>
         </record>
         <record id="view_return_order_form" model="ir.ui.view">
-            <field name="name">return order</field>
+            <field name="name">view.return.order.form</field>
             <field name="model">return.order</field>
             <field name="arch" type="xml">
                 <form string="Return Order">
+                    <header>
+                        <button name="action_reviewed" states="draft" class="oe_highlight" type="object"
+                                string="Reviewed"/>
+                        <button name="action_approve" states="reviewed" class="oe_highlight" type="object"
+                                groups="Return_Order.return_group_supervisor,Return_Order.return_group_manager"
+                                string="Return Order"/>
+                        <button name="action_draft" type="object" string="reset to draft"
+                                states="reviewed,approve"/>
+                        <field name="state" widget="statusbar"/>
+                    </header>
+
                     <sheet>
-                        <div class="oe_button_box" name="button_box">
-                        </div>
-
-                        <div class="oe_title">
-                            <label for="name" string="Order Name"/>
-                            <h1>
-                                <field name="name" readonly="1"/>
-                            </h1>
-
-                        </div>
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
                         <group>
                             <group>
-                                <field name="eng_description"/>
-                                <field name="ara_description"/>
+                                <field name="partner_id" options="{'no_create':True}"/>
+                                <field name="sale_id" options="{'no_create':True}"/>
+                                <field name="delivery_id" options="{'no_create':True}"/>
+                                <field name="reason_id" options="{'no_create':True}"/>
+                                <field name="customer_ref"/>
                             </group>
                             <group>
-                                <field name="active"/>
+                                <field name="date"/>
+                                <field name="sale_date"/>
+                                <field name="delivery_date"/>
                             </group>
                         </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="view_request_return_order_form" model="ir.ui.view">
+            <field name="name">view.return.order.form</field>
+            <field name="model">return.order</field>
+            <field name="arch" type="xml">
+                <form string="Request Return Order">
+                    <header>
+                        <button name="action_reviewed" states="draft" class="oe_highlight" type="object"
+                                string="Reviewed"/>
+                        <button name="action_approve" states="reviewed" class="oe_highlight" type="object"
+                                groups="Return_Order.return_group_supervisor,Return_Order.return_group_manager"
+                                string="Return Order"/>
+                        <button name="action_draft" type="object" string="reset to draft"
+                                states="reviewed,approve"/>
+                        <field name="state" widget="statusbar"/>
+                    </header>
+
+                    <sheet>
+                        <label for="name" string="Request For Return"
+                               attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                        <label for="name" string="Return Order" attrs="{'invisible': [('state', '==', 'draft')]}"/>
+                        <h1>
+                            <span attrs="{'invisible': ['|',('state', '!=', 'draft'), ('name', '!=', False)]}">New
+                            </span>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                        <group>
+                            <group>
+                                <field name="partner_id" options="{'no_create':True}"/>
+                                <field name="sale_id" options="{'no_create':True}"/>
+                                <field name="delivery_id" options="{'no_create':True}"/>
+                                <field name="reason_id" options="{'no_create':True}"/>
+                                <field name="customer_ref"/>
+                            </group>
+                            <group>
+                                <field name="date"/>
+                                <field name="sale_date"/>
+                                <field name="delivery_date"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Products">
+                                <field name="return_line_ids">
+                                    <tree string="" editable="bottom"> <!-- decoration-info="price_subtotal == 0" -->
+                                        <field name="product_id"/>
+                                        <field name="description"/>
+                                        <field name="qty"/>
+                                        <field name="uom_id"/>
+                                        <field name="price_unit"/>
+                                        <field name="price_subtotal"/>
+                                    </tree>
+                                </field>
+                            </page>
+
+                        </notebook>
                     </sheet>
                 </form>
             </field>
@@ -46,36 +130,30 @@
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">return.order</field>
             <field name="view_mode">tree,form</field>
-            <field name="context">{'default_active': True}</field>
+            <field name="domain">[('state', '!=', ['draft'])]</field>
             <field name="view_ids" eval="[(5, 0, 0),
                 (0, 0, {'view_mode': 'tree', 'view_id': ref('Return_Order.view_return_order_tree')}),
                 (0, 0, {'view_mode': 'form', 'view_id': ref('Return_Order.view_return_order_form')}),
                 ]"/>
 
         </record>
-        <menuitem
-                id="menu_return_root"
-                name="Return Order"
-                groups="stock.group_stock_manager,stock.group_stock_user"
-                web_icon="Return_Order,static/description/icon.png"
-                sequence="13"/>
-        <menuitem id="menu_return_order" name="Orders" parent="menu_return_root" sequence="2"/>
+        <record id="action_request_return_order_view" model="ir.actions.act_window">
+            <field name="name">Return Order</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">return.order</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('state', '=', ['draft'])]</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('Return_Order.view_request_return_order_tree')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('Return_Order.view_request_return_order_form')}),
+                ]"/>
 
-        <!-- Actions Must be Change-->
-        <menuitem id="menu_return_operation" name="Operations" parent="menu_return_root" sequence="2"/>
-        <menuitem id="menu_return_credit_note" name="to credit note" action="action_return_order_view"
-                  parent="menu_return_operation" sequence="1"/>
-        <menuitem id="menu_return_to_receipt" name="to receipt" parent="menu_return_operation"
+        </record>
+
+        <menuitem id="menu_request_return_order_view" name="Request for Return" parent="menu_return_order"
+                  action="action_request_return_order_view" sequence="1"/>
+        <menuitem id="menu_return_order_view" name="Return Order" parent="menu_return_order"
                   action="action_return_order_view" sequence="2"/>
-        <!-- Action Must be Change-->
-        <menuitem id="menu_return_reporting" name="Reporting" parent="menu_return_root"
-                  action="action_return_order_view" sequence="3"/>
-
-        <menuitem id="menu_return_configuration" name="configuration" parent="menu_return_root" sequence="4"/>
-        <menuitem id="menu_return_configuration_settings" name="Settings" action="return_order_config"
-                  parent="menu_return_configuration" sequence="1"/>
-        <menuitem id="menu_return_configuration_reasons" name="return reasons" parent="menu_return_configuration"
-                  action="action_return_order_view" groups="Return_Order.return_group_supervisor,Return_Order.return_group_manager" sequence="2"/>
 
     </data>
 </odoo>
