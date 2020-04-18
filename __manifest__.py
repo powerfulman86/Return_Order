@@ -7,11 +7,12 @@
     'author': 'Ahmed Maher',
     'website': '',
     'license': 'LGPL-3',
-    'depends': ['base'],
+    'depends': ['base', 'sale', 'contacts'],
     'data': [
         'security/ir.model.access.csv',
         'views/return_settings.xml',
         'views/return_order.xml',
+        'views/return_voucher.xml',
     ],
     'images': ['static/description/icon.png'],
     'installable': True,

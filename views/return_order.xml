@@ -130,7 +130,7 @@
                 id="menu_return_root"
                 name="Return Order"
                 groups="stock.group_stock_manager,stock.group_stock_user"
-                web_icon="return_order,static/description/icon.png"
+                web_icon="Return_Order,static/description/icon.png"
                 sequence="13"/>
         <menuitem id="menu_return_order" name="Orders" parent="menu_return_root" sequence="1"/>
         <menuitem id="menu_return_return_request" name="Request For Return" action="action_request_order_view"

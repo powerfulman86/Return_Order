@@ -2,3 +2,4 @@
 
 from . import return_order
 from . import return_settings
+from . import return_voucher
