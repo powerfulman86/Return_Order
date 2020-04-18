@@ -1,2 +1,2 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_retun__order_retun__order,retun__order.retun__order,model_retun__order_retun__order,base.group_user,1,1,1,1
+access_return_order,return_order,model_return_order,,1,1,1,1

@@ -1,4 +1,3 @@
-
 {
     'name': 'Return Order',
     'version': '1',
@@ -10,8 +9,11 @@
     'license': 'LGPL-3',
     'depends': ['base'],
     'data': [
-            ],
-    'images': ['static/description/ReturnOrder.png'],
+        'security/ir.model.access.csv',
+        'views/return_settings.xml',
+        'views/return_order.xml',
+    ],
+    'images': ['static/description/icon.png'],
     'installable': True,
     'auto_install': False,
     'application': True,
