@@ -15,11 +15,28 @@ class ReturnVoucher(models.Model):
     delivery_number = fields.Char(string="delivery number", )
     delivery_date = fields.Date(string="Date")
     reason_id = fields.Many2one(comodel_name="return.order", string="reason to return")
+    state = fields.Selection([
+        ('draft', 'Draft RFO'),
+        ('reviewed', 'Reviewed'),
+        ('approve', 'return order'),
+    ], 'Order Status', default='draft', copy=False, readonly=True)
+
+    def action_reviewed(self):
+        self.state = 'reviewed'
+
+    def action_approve(self):
+        self.state = 'approve'
+
+    def action_cancel(self):
+        self.state = 'cancel'
+
+    def action_draft(self):
+        self.state = 'draft'
 
     @api.onchange('sale_id')
     def _onchange_sale_id(self):
         for rec in self:
-            rec.code = rec.sale_id.partner_id.code
+            rec.customer_ref = rec.sale_id.partner_id.code
 
     def random_number(self, n):
         range_start = 10 ** (n - 1)

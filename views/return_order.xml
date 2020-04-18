@@ -1,16 +1,5 @@
 <odoo>
     <data>
-        <record id="view_request_return_order_tree" model="ir.ui.view">
-            <field name="name">return order</field>
-            <field name="model">return.order</field>
-            <field name="arch" type="xml">
-                <tree string="Return Order">
-                    <field name="name"/>
-                    <field name="eng_description"/>
-                    <field name="ara_description"/>
-                </tree>
-            </field>
-        </record>
         <record id="view_return_order_tree" model="ir.ui.view">
             <field name="name">return order</field>
             <field name="model">return.order</field>
@@ -22,60 +11,11 @@
                 </tree>
             </field>
         </record>
-        <record id="view_request_return_order_form" model="ir.ui.view">
-            <field name="name">return order</field>
-            <field name="model">return.order</field>
-            <field name="arch" type="xml">
-                <form string="Return Order">
-                    <header>
-                        <button name="action_reviewed" states="draft" class="oe_highlight" type="object"
-                                string="Reviewed"/>
-                        <button name="action_approve" states="reviewed" class="oe_highlight" type="object"
-                                string="return"/>
-                        <button name="action_draft" type="object" string="reset to draft"
-                                states="reviewed,approve"/>
-                        <field name="state" widget="statusbar"/>
-                    </header>
-
-                    <sheet>
-                        <div class="oe_button_box" name="button_box">
-                        </div>
-
-                        <div class="oe_title">
-                            <label for="name" string="Order Name"/>
-                            <h1>
-                                <field name="name" readonly="1"/>
-                            </h1>
-
-                        </div>
-                        <group>
-                            <group>
-                                <field name="eng_description"/>
-                                <field name="ara_description"/>
-                            </group>
-                            <group>
-                                <field name="active"/>
-                            </group>
-                        </group>
-                    </sheet>
-                </form>
-            </field>
-        </record>
         <record id="view_return_order_form" model="ir.ui.view">
             <field name="name">return order</field>
             <field name="model">return.order</field>
             <field name="arch" type="xml">
                 <form string="Return Order">
-                    <header>
-                        <button name="action_reviewed" states="draft" class="oe_highlight" type="object"
-                                string="Reviewed"/>
-                        <button name="action_approve" states="reviewed" class="oe_highlight" type="object"
-                                string="return"/>
-                        <button name="action_draft" type="object" string="reset to draft"
-                                states="reviewed,approve"/>
-                        <field name="state" widget="statusbar"/>
-                    </header>
-
                     <sheet>
                         <div class="oe_button_box" name="button_box">
                         </div>
@@ -101,24 +41,11 @@
             </field>
         </record>
 
-        <record id="action_request_order_view" model="ir.actions.act_window">
-            <field name="name">Request For Return</field>
-            <field name="type">ir.actions.act_window</field>
-            <field name="res_model">return.order</field>
-            <field name="view_mode">tree,form</field>
-            <field name="domain">[('state', 'in', ['draft'])]</field>
-            <field name="context">{'default_active': True}</field>
-            <field name="view_ids" eval="[(5, 0, 0),
-                (0, 0, {'view_mode': 'tree', 'view_id': ref('Return_Order.view_request_return_order_tree')}),
-                (0, 0, {'view_mode': 'form', 'view_id': ref('Return_Order.view_request_return_order_form')}),
-                ]"/>
-        </record>
         <record id="action_return_order_view" model="ir.actions.act_window">
             <field name="name">Return Order</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">return.order</field>
             <field name="view_mode">tree,form</field>
-            <field name="domain">[('state', 'not in', ['draft'])]</field>
             <field name="context">{'default_active': True}</field>
             <field name="view_ids" eval="[(5, 0, 0),
                 (0, 0, {'view_mode': 'tree', 'view_id': ref('Return_Order.view_return_order_tree')}),
@@ -132,27 +59,23 @@
                 groups="stock.group_stock_manager,stock.group_stock_user"
                 web_icon="Return_Order,static/description/icon.png"
                 sequence="13"/>
-        <menuitem id="menu_return_order" name="Orders" parent="menu_return_root" sequence="1"/>
-        <menuitem id="menu_return_return_request" name="Request For Return" action="action_request_order_view"
-                  parent="menu_return_order" sequence="1"/>
-        <menuitem id="menu_return_return_order" name="Return Order" parent="menu_return_order"
-                  action="action_return_order_view" sequence="2"/>
+        <menuitem id="menu_return_order" name="Orders" parent="menu_return_root" sequence="2"/>
 
         <!-- Actions Must be Change-->
         <menuitem id="menu_return_operation" name="Operations" parent="menu_return_root" sequence="2"/>
-        <menuitem id="menu_return_credit_note" name="to credit note" action="action_request_order_view"
+        <menuitem id="menu_return_credit_note" name="to credit note" action="action_request_return_voucher_view"
                   parent="menu_return_operation" sequence="1"/>
         <menuitem id="menu_return_to_receipt" name="to receipt" parent="menu_return_operation"
-                  action="action_request_order_view" sequence="2"/>
+                  action="action_request_return_voucher_view" sequence="2"/>
         <!-- Action Must be Change-->
         <menuitem id="menu_return_reporting" name="Reporting" parent="menu_return_root"
-                  action="action_request_order_view" sequence="3"/>
+                  action="action_request_return_voucher_view" sequence="3"/>
 
         <menuitem id="menu_return_configuration" name="configuration" parent="menu_return_root" sequence="4"/>
         <menuitem id="menu_return_configuration_settings" name="Settings" action="return_order_config"
                   parent="menu_return_configuration" sequence="1"/>
         <menuitem id="menu_return_configuration_reasons" name="return reasons" parent="menu_return_configuration"
-                  action="return_order_config" sequence="2"/>
+                  action="action_return_order_view" groups="Return_Order.return_group_supervisor,Return_Order.return_group_manager" sequence="2"/>
 
     </data>
 </odoo>
