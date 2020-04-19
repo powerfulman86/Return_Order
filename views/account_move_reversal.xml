@@ -1,0 +1,16 @@
+<odoo>
+    <data>
+        <record id="mir_view_account_move_reversal_inherit" model="ir.ui.view">
+            <field name="name">view.inherit.account.move.reversal.form</field>
+            <field name="model">account.move.reversal</field>
+            <field name="inherit_id" ref="account.view_account_move_reversal"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//field[@name='move_type']" position="after">
+                    <field name="return_id" invisible="0" />
+                </xpath>
+                
+            </field>
+        </record>
+    </data>
+</odoo>

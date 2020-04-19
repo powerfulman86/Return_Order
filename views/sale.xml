@@ -1,0 +1,21 @@
+<odoo>
+    <data>
+        <record id="vmirarity_commission_sale_order_form" model="ir.ui.view">
+            <field name="name">view.inherit.sale.form</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//button[@name='action_view_invoice']" position="after">
+                    <button name="action_view_return" type="object" class="oe_stat_button" icon="fa-pencil-square-o"
+                            attrs="{'invisible': [('return_count', '=', 0)]}">
+                        <field name="return_count" widget="statinfo" string="Returns"/>
+                    </button>
+
+                </xpath>
+
+            </field>
+        </record>
+
+    </data>
+</odoo>
