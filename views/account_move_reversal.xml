@@ -7,7 +7,7 @@
             <field name="arch" type="xml">
 
                 <xpath expr="//field[@name='move_type']" position="after">
-                    <group>
+                    <group attrs="{'invisible': [('return_id', '=', False)]}" >
                         <group>
                             <field name="return_id" invisible="1"/>
                             <field name="return_sale_order_id" invisible="0"/>

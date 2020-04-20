@@ -23,4 +23,4 @@ class AccountMoveReversal(models.TransientModel):
             if rec.return_id:
                 if rec.return_id.sale_id:
                     return {'domain': {'move_id': [('id', 'in', rec.return_id.sale_id.invoice_ids.ids)]}}
-            rec.reason = 'Return Order ' + rec.return_id.name
+                rec.reason = 'Return Order ' + rec.return_id.name
