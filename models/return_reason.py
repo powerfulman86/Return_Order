@@ -28,7 +28,7 @@ class ReturnReason(models.Model):
     @api.model
     def create(self, values):
         values['name'] = self.check_return_code(str(self.random_number(4)))
-        return super(ReturnOrder, self).create(values)
+        return super(ReturnReason, self).create(values)
 
 
 

@@ -11,6 +11,7 @@
     'data': [
         'security/return_secuirty.xml',
         'security/ir.model.access.csv',
+        'data/sequence.xml',
         'views/account_move_reversal.xml',
         'views/return_settings.xml',
         'views/return_reason.xml',

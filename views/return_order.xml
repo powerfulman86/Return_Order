@@ -21,7 +21,7 @@
             <field name="view_mode">form</field>
             <field name="context">{
                 'default_return_id': active_id,
-                'default_move_type':'out_invoice',
+                'default_move_type':'entry',
                 }
             </field>
             <field name="target">new</field>
@@ -41,7 +41,7 @@
                         <button name="action_draft" type="object" string="reset to draft"
                                 states="reviewed,approve"/>
 
-                        <button name="%(Return_Order.return_action_refund)d" type="action" string="Refund"
+                        <button name="Return_Order.return_action_refund" type="action" string="Refund"
                                 groups="account.group_account_invoice"
                                 attrs="{'invisible': [('with_refund', '=', False)]}"
 
@@ -63,7 +63,7 @@
                             <button name="action_picking_view" type="object" class="oe_stat_button"
                                     icon="fa-pencil-square-o"
                                     attrs="{'invisible': [('picking_count', '=', 0)]}">
-                                <field name="picking_count" widget="statinfo" string="Picking"/>
+                                <field name="picking_count" widget="statinfo" string="receipt"/>
                             </button>
                         </div>
                         <label for="name" string="Request For Return"
@@ -77,14 +77,14 @@
                         <group>
                             <group>
                                 <field name="partner_id" options="{'no_create':True}"/>
-                                <field name="sale_id" options="{'no_create':True}"/>
-                                <field name="delivery_id" options="{'no_create':True}"/>
-                                <field name="reason_id" options="{'no_create':True}"/>
                                 <field name="customer_ref"/>
+                                <field name="reason_id" options="{'no_create':True}"/>
                             </group>
                             <group>
                                 <field name="date"/>
+                                <field name="sale_id" options="{'no_create':True}"/>
                                 <field name="sale_date"/>
+                                <field name="delivery_id" options="{'no_create':True}"/>
                                 <field name="delivery_date"/>
                                 <field name="with_refund" attrs="{'invisible': [('state', '!=', 'approve' )]}"/>
                             </group>

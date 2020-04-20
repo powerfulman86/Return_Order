@@ -1,4 +1,4 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_return_order,return_order,model_return_reason,,1,1,1,1
+access_return_reason,return_reason,model_return_reason,,1,1,1,1
 access_return_order,return_order,model_return_order,,1,1,1,1
 access_return_order_line,return_order_line,model_return_order_line,,1,1,1,1

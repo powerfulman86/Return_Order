@@ -13,7 +13,7 @@ class ReturnOrder(models.Model):
     sale_id = fields.Many2one(comodel_name="sale.order", string="Sale Order", required=True)
     sale_date = fields.Datetime(string="Sale Order Date", related='sale_id.date_order')
     partner_id = fields.Many2one('res.partner', 'Customer', required=True)
-    customer_ref = fields.Char(readonly="1")
+    customer_ref = fields.Char(compute="_compute_partner_code")
     delivery_id = fields.Many2one(comodel_name="stock.picking", string="delivery number", required=True, )
     delivery_date = fields.Datetime(string="Delivery Date", related='delivery_id.scheduled_date')
     reason_id = fields.Many2one(comodel_name="return.reason", string="reason to return")
@@ -41,7 +41,10 @@ class ReturnOrder(models.Model):
         for return_order in self:
             return_order.picking_count = len(return_order.picking_ids)
 
-
+    @api.depends('partner_id')
+    def _compute_partner_code(self):
+        for rec in self:
+            rec.customer_ref = rec.partner_id.code
 
     @api.onchange('partner_id','sale_id')
     def _onchange_partner_id(self):
@@ -128,8 +131,13 @@ class ReturnOrder(models.Model):
 
     @api.model
     def create(self, values):
-        values['name'] = self.check_order_code(str(self.random_number(4)))
+        values['name'] = self.env['ir.sequence'].next_by_code('return.order')
         return super(ReturnOrder, self).create(values)
+
+    # @api.model
+    # def create(self, values):
+    #     values['name'] = self.check_order_code(str(self.random_number(4)))
+    #     return super(ReturnOrder, self).create(values)
 
 
 class ReturnOrderLine(models.Model):
