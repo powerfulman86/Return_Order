@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import api, fields, models,_
+from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 from random import randint
 
@@ -27,7 +27,7 @@ class ReturnOrder(models.Model):
     ], 'Order Status', default='draft', copy=False, readonly=True)
     picking_count = fields.Integer(string="Picking Count", compute='_compute_picking_count')
     receipt_count = fields.Integer(string="")
-    with_refund = fields.Boolean(string="Refund",  )
+    with_refund = fields.Boolean(string="Refund", )
 
     invoices_count = fields.Integer('Credit Notes Count', compute='_compute_credit_notes_count')
     invoice_ids = fields.Many2many('account.move', string='Credit Notes')
@@ -52,7 +52,7 @@ class ReturnOrder(models.Model):
         for rec in self:
             rec.customer_ref = rec.partner_id.code
 
-    @api.onchange('partner_id','sale_id')
+    @api.onchange('partner_id', 'sale_id')
     def _onchange_partner_id(self):
         for rec in self:
             if rec.partner_id:
@@ -90,24 +90,41 @@ class ReturnOrder(models.Model):
     def action_approve(self):
         for rec in self:
             location = self.env.ref('stock.stock_location_stock')
-            picking_type_id = self.env['stock.picking.type'].search([('code', '=','incoming')], limit=1)
+            picking_type_id = self.env['stock.picking.type'].search([('code', '=', 'incoming')], limit=1)
             picking = self.env['stock.picking'].create({
                 'partner_id': rec.partner_id.id,
                 'picking_type_id': picking_type_id.id,
-                'location_id': picking_type_id.default_location_src_id.id or location.id,
                 'location_dest_id': picking_type_id.default_location_dest_id.id or location.id,
-                'origin': rec.name ,
-                'origin': rec.name ,
+                'location_id': rec.partner_id.property_stock_supplier.id if rec.partner_id.property_stock_supplier else picking_type_id.default_location_dest_id.id,
+                'origin': rec.name,
+                'user_id': False,
+                'date': fields.Date.today(),
+                'company_id': self.env.user.company_id.id,
             })
             for line in rec.return_line_ids:
                 self.env['stock.move'].create({
                     'picking_id': picking.id,
                     'product_id': line.product_id.id,
                     'name': line.product_id.name,
-                    'product_uom_qty': line.qty ,
-                    'product_uom': line.uom_id.id ,
-                    'location_id': picking.picking_type_id.default_location_src_id.id or location.id,
+                    'product_uom_qty': line.qty,
+                    'product_uom': line.uom_id.id,
+                    'location_id': line.return_id.partner_id.property_stock_supplier.id or location.id,
                     'location_dest_id': picking.picking_type_id.default_location_dest_id.id or location.id,
+                    'date': fields.Date.today(),
+                    'date_expected': fields.Date.today(),
+                    'partner_id': line.return_id.partner_id.id,
+                    'state': 'draft',
+                    'purchase_line_id': False,
+                    'company_id': self.env.user.company_id.id,
+                    'price_unit': line.price_unit,
+                    'picking_type_id': picking_type_id.id,
+                    'group_id': False,
+                    'origin': line.return_id.name,
+                    'propagate_date': fields.Date.today(),
+                    'description_picking': line.product_id._get_description(picking_type_id),
+                    'route_ids': picking_type_id.warehouse_id and [
+                        (6, 0, [x.id for x in picking_type_id.warehouse_id.route_ids])] or [],
+                    'warehouse_id': picking_type_id.warehouse_id.id,
                 })
             rec.state = 'approve'
             rec.picking_ids = [(4, picking.id)]
@@ -157,6 +174,11 @@ class ReturnOrderLine(models.Model):
     price_unit = fields.Float(string="Price", )
     price_subtotal = fields.Float(string="Subtotal")
 
+    @api.onchange('product_id')
+    def change_product_id(self):
+        for rec in self:
+            rec.uom_id = rec.product_id.uom_id
+
     # @api.onchange('product_id')
     # def _onchange_product_id(self):
     #     product_ids = []
@@ -176,4 +198,3 @@ class ReturnOrderLine(models.Model):
     #     for rec in self:
     #         if rec.qty > rec.delivered_qty:
     #             raise ValidationError(_("Ordered Qty Must be Smaller OR Equal To Delivered Qty"))
-
