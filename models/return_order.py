@@ -17,6 +17,7 @@ class ReturnOrder(models.Model):
     delivery_id = fields.Many2one(comodel_name="stock.picking", string="delivery number", required=True, )
     delivery_date = fields.Datetime(string="Delivery Date", related='delivery_id.scheduled_date')
     reason_id = fields.Many2one(comodel_name="return.reason", string="reason to return")
+    ticket_id = fields.Many2one(comodel_name="helpdesk.ticket", string="Ticket")
     return_line_ids = fields.One2many(comodel_name="return.order.line", inverse_name="return_id")
     picking_ids = fields.One2many(comodel_name="stock.picking", inverse_name="return_id")
     state = fields.Selection([

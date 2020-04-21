@@ -17,6 +17,6 @@ class SaleOrder(models.Model):
 
     def action_view_return(self):
         return_ids = self.mapped('return_ids')
-        action = self.env.ref('action_request_return_order_view	').read()[0]
+        action = self.env.ref('action_request_return_order_view').read()[0]
         action['domain'] = [('id', 'in', return_ids.ids)]
         return action
