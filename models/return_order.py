@@ -165,10 +165,10 @@ class ReturnOrderLine(models.Model):
     #     else:
     #         return {'domain': {'product_id': [('id', 'in', False)]}}
 
-    @api.onchange('qty')
-    @api.constrains('qty')
-    def _onchange_quantity(self):
-        for rec in self:
-            if rec.qty > rec.delivered_qty:
-                raise ValidationError(_("Ordered Qty Must be Smaller OR Equal To Delivered Qty"))
+    # @api.onchange('qty')
+    # @api.constrains('qty')
+    # def _onchange_quantity(self):
+    #     for rec in self:
+    #         if rec.qty > rec.delivered_qty:
+    #             raise ValidationError(_("Ordered Qty Must be Smaller OR Equal To Delivered Qty"))
 
