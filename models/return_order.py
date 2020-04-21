@@ -32,6 +32,11 @@ class ReturnOrder(models.Model):
     invoices_count = fields.Integer('Credit Notes Count', compute='_compute_credit_notes_count')
     invoice_ids = fields.Many2many('account.move', string='Credit Notes')
 
+    def action_view_ticket(self):
+        action = self.env.ref('helpdesk.helpdesk_ticket_action_main_tree').read()[0]
+        action['domain'] = [('id', '=', self.ticket_id.id)]
+        return action
+
     @api.depends('invoice_ids')
     def _compute_credit_notes_count(self):
         for return_order in self:

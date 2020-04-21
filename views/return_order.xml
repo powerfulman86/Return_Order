@@ -50,6 +50,12 @@
                     </header>
                     <sheet>
                         <div class="oe_button_box" name="button_box">
+                            <button name="action_view_ticket" type="object" class="oe_stat_button"
+                                    icon="fa-pencil-square-o"
+                                    string="Ticket"
+                                    attrs="{'invisible': [('ticket_id', '=', False)]}">
+                                <field name="ticket_id" invisible="1" />
+                            </button>
                             <button name="" type="object" class="oe_stat_button"
                                     icon="fa-pencil-square-o"
                                     attrs="{'invisible': [('receipt_count', '=', 0)]}">
