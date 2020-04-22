@@ -128,6 +128,7 @@ class ReturnOrder(models.Model):
                 })
             rec.state = 'approve'
             rec.picking_ids = [(4, picking.id)]
+            picking.action_confirm()
 
     def action_cancel(self):
         self.state = 'cancel'
