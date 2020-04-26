@@ -7,4 +7,4 @@ from odoo import api, fields, models, _
 class ReturnConfigSettings(models.TransientModel):
     _inherit = 'res.config.settings'
 
-    return_reason = fields.Selection(string="Reason", selection=[('1', '----'), ('2', '-----'), ], required=False, )
+    use_bridge_account = fields.Boolean(string="Use Bridge Account", config_parameter='base_setup.use_bridge_account', )
