@@ -55,9 +55,16 @@
         <record id="action_return_order_to_receipt" model="ir.actions.act_window">
             <field name="name">Return Order Receipt</field>
             <field name="type">ir.actions.act_window</field>
-            <field name="res_model">stock.picking</field>
+            <field name="res_model">return.order</field>
             <field name="view_mode">tree,form</field>
-            <field name="domain">[('return_id', '!=', False)]</field>
+            <field name="domain">[('picking_ids', '!=', False)]</field>
+        </record>
+        <record id="action_return_order_to_credit_note" model="ir.actions.act_window">
+            <field name="name">Return Order Receipt</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">return.order</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('invoice_ids', '!=', False)]</field>
         </record>
         <menuitem
                 id="menu_return_root"
@@ -69,10 +76,12 @@
 
         <!-- Actions Must be Change-->
         <menuitem id="menu_return_operation" name="Operations" parent="menu_return_root" sequence="2"/>
-        <menuitem id="menu_return_credit_note" name="to credit note" action="action_return_reason_view"
-                  parent="menu_return_operation" sequence="1"/>
+        <menuitem id="menu_return_credit_note" name="to credit note" action="action_return_order_to_credit_note"
+                  parent="menu_return_operation" sequence="1"
+                  groups="Return_Order.return_group_supervisor,Return_Order.return_group_manager"/>
         <menuitem id="menu_return_to_receipt" name="to receipt" parent="menu_return_operation"
-                  action="action_return_order_to_receipt" sequence="2"/>
+                  action="action_return_order_to_receipt" sequence="2"
+                  groups="Return_Order.return_group_supervisor,Return_Order.return_group_manager"/>
         <!-- Action Must be Change-->
         <menuitem id="menu_return_reporting" name="Reporting" parent="menu_return_root"
                   action="action_return_reason_view" sequence="3"/>
@@ -81,7 +90,8 @@
         <menuitem id="menu_return_configuration_settings" name="Settings" action="return_order_config"
                   parent="menu_return_configuration" sequence="1"/>
         <menuitem id="menu_return_configuration_reasons" name="return reasons" parent="menu_return_configuration"
-                  action="action_return_reason_view" groups="Return_Order.return_group_supervisor,Return_Order.return_group_manager" sequence="2"/>
+                  action="action_return_reason_view"
+                  groups="Return_Order.return_group_supervisor,Return_Order.return_group_manager" sequence="2"/>
 
     </data>
 </odoo>

@@ -14,7 +14,10 @@ class AccountMoveReversal(models.TransientModel):
         res = super(AccountMoveReversal, self).reverse_moves()
         if self.return_id:
             reverse_move = self.env['account.move'].browse(res.get('res_id'))
-            self.return_id.invoice_ids |= reverse_move
+            print(res.get('res_id'), ">>>>>>>>>>>>>>>>>>>>>>>>", reverse_move)
+            print(self.return_id, ">>>>>>>>>>>>>>>>>>>>>>>>")
+            print(self.return_id.invoice_ids, ">>>>>>>>>>>>>>>>>>>>>>>>")
+            self.return_id.invoice_ids = [(4, reverse_move.id)]
         return res
 
     @api.onchange('return_id','return_sale_order_id')

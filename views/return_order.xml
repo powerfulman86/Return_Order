@@ -61,7 +61,7 @@
                                     attrs="{'invisible': [('receipt_count', '=', 0)]}">
                                 <field name="receipt_count" widget="statinfo" string="Receipt"/>
                             </button>
-                            <button name="" type="object" class="oe_stat_button"
+                            <button name="action_view_invoice_ids" type="object" class="oe_stat_button"
                                     icon="fa-pencil-square-o"
                                     attrs="{'invisible': [('invoices_count', '=', 0)]}">
                                 <field name="invoices_count" widget="statinfo" string="credit note"/>
@@ -85,6 +85,7 @@
                                 <field name="partner_id" options="{'no_create':True}"
                                        attrs="{'readonly': [('state', '!=', 'draft' )]}"/>
                                 <field name="customer_ref"/>
+                                <field name="invoice_ids" invisible="1"/>
                                 <field name="reason_id" options="{'no_create':True}"
                                        attrs="{'readonly': [('state', '!=', 'draft' )]}"/>
                             </group>
@@ -97,7 +98,7 @@
                                        attrs="{'readonly': [('state', '!=', 'draft' )]}"/>
                                 <field name="delivery_date"/>
                                 <field name="with_refund"
-                                       attrs="{'invisible': [('state', '!=', 'approve' )], 'readonly': [('state', '!=', 'draft' )]}"/>
+                                       attrs="{'invisible': [('state', '!=', 'approve' )]}"/>
                             </group>
                         </group>
                         <notebook>
@@ -144,6 +145,7 @@
         <menuitem id="menu_request_return_order_view" name="Request for Return" parent="menu_return_order"
                   action="action_request_return_order_view" sequence="1"/>
         <menuitem id="menu_return_order_view" name="Return Order" parent="menu_return_order"
+                  groups="Return_Order.return_group_supervisor,Return_Order.return_group_manager"
                   action="action_return_order_view" sequence="2"/>
 
     </data>

@@ -37,6 +37,11 @@ class ReturnOrder(models.Model):
         action['domain'] = [('id', '=', self.ticket_id.id)]
         return action
 
+    def action_view_invoice_ids(self):
+        action = self.env.ref('account.action_move_out_refund_type').read()[0]
+        action['domain'] = [('id', 'in', self.invoice_ids.ids)]
+        return action
+
     @api.depends('invoice_ids')
     def _compute_credit_notes_count(self):
         for return_order in self:
