@@ -54,7 +54,7 @@
                                     icon="fa-pencil-square-o"
                                     string="Ticket"
                                     attrs="{'invisible': [('ticket_id', '=', False)]}">
-                                <field name="ticket_id" invisible="1" />
+                                <field name="ticket_id" invisible="1"/>
                             </button>
                             <button name="" type="object" class="oe_stat_button"
                                     icon="fa-pencil-square-o"
@@ -82,22 +82,27 @@
                         </h1>
                         <group>
                             <group>
-                                <field name="partner_id" options="{'no_create':True}"/>
+                                <field name="partner_id" options="{'no_create':True}"
+                                       attrs="{'readonly': [('state', '!=', 'draft' )]}"/>
                                 <field name="customer_ref"/>
-                                <field name="reason_id" options="{'no_create':True}"/>
+                                <field name="reason_id" options="{'no_create':True}"
+                                       attrs="{'readonly': [('state', '!=', 'draft' )]}"/>
                             </group>
                             <group>
-                                <field name="date"/>
-                                <field name="sale_id" options="{'no_create':True}"/>
+                                <field name="date" attrs="{'readonly': [('state', '!=', 'draft' )]}"/>
+                                <field name="sale_id" options="{'no_create':True}"
+                                       attrs="{'readonly': [('state', '!=', 'draft' )]}"/>
                                 <field name="sale_date"/>
-                                <field name="delivery_id" options="{'no_create':True}"/>
+                                <field name="delivery_id" options="{'no_create':True}"
+                                       attrs="{'readonly': [('state', '!=', 'draft' )]}"/>
                                 <field name="delivery_date"/>
-                                <field name="with_refund" attrs="{'invisible': [('state', '!=', 'approve' )]}"/>
+                                <field name="with_refund"
+                                       attrs="{'invisible': [('state', '!=', 'approve' )], 'readonly': [('state', '!=', 'draft' )]}"/>
                             </group>
                         </group>
                         <notebook>
                             <page string="Products">
-                                <field name="return_line_ids">
+                                <field name="return_line_ids" attrs="{'readonly': [('state', '!=', 'draft' )]}">
                                     <tree string="" editable="bottom"> <!-- decoration-info="price_subtotal == 0" -->
                                         <field name="product_id" domain="[('type', '=', 'service')]"/>
                                         <field name="description"/>

@@ -8,23 +8,23 @@ class ReturnOrder(models.Model):
     _name = 'return.order'
     _inherit = ['mail.thread', 'mail.activity.mixin']
 
-    name = fields.Char(string="code", )
+    name = fields.Char(string="code", track_visibility='always')
     date = fields.Date(string="Date", default=fields.Date.context_today)
-    sale_id = fields.Many2one(comodel_name="sale.order", string="Sale Order", required=True)
+    sale_id = fields.Many2one(comodel_name="sale.order", string="Sale Order", required=True, track_visibility='always')
     sale_date = fields.Datetime(string="Sale Order Date", related='sale_id.date_order')
     partner_id = fields.Many2one('res.partner', 'Customer', required=True)
     customer_ref = fields.Char(compute="_compute_partner_code")
-    delivery_id = fields.Many2one(comodel_name="stock.picking", string="delivery number", required=True, )
+    delivery_id = fields.Many2one(comodel_name="stock.picking", string="delivery number", required=True, track_visibility='always')
     delivery_date = fields.Datetime(string="Delivery Date", related='delivery_id.scheduled_date')
-    reason_id = fields.Many2one(comodel_name="return.reason", string="reason to return")
-    ticket_id = fields.Many2one(comodel_name="helpdesk.ticket", string="Ticket")
-    return_line_ids = fields.One2many(comodel_name="return.order.line", inverse_name="return_id")
-    picking_ids = fields.One2many(comodel_name="stock.picking", inverse_name="return_id")
+    reason_id = fields.Many2one(comodel_name="return.reason", string="reason to return", track_visibility='always')
+    ticket_id = fields.Many2one(comodel_name="helpdesk.ticket", string="Ticket", track_visibility='always')
+    return_line_ids = fields.One2many(comodel_name="return.order.line", inverse_name="return_id", track_visibility='always')
+    picking_ids = fields.One2many(comodel_name="stock.picking", inverse_name="return_id", track_visibility='always')
     state = fields.Selection([
         ('draft', 'Draft RFO'),
         ('reviewed', 'Reviewed'),
         ('approve', 'return order'),
-    ], 'Order Status', default='draft', copy=False, readonly=True)
+    ], 'Order Status', default='draft', copy=False, readonly=True, track_visibility='always')
     picking_count = fields.Integer(string="Picking Count", compute='_compute_picking_count')
     receipt_count = fields.Integer(string="")
     with_refund = fields.Boolean(string="Refund", )
