@@ -19,6 +19,7 @@
                                         Use Bridge Account
                                     </span>
                                     <field name='use_bridge_account'/>
+                                    <field name='return_reason'/>
                                 </div>
                             </div>
                         </div>
