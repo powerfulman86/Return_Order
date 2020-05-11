@@ -7,6 +7,7 @@ from random import randint
 class ReturnOrder(models.Model):
     _name = 'return.order'
     _inherit = ['mail.thread', 'mail.activity.mixin']
+    _description = "Return Order"
 
     name = fields.Char(string="code", track_visibility='always')
     date = fields.Date(string="Date", default=fields.Date.context_today)
@@ -171,6 +172,8 @@ class ReturnOrder(models.Model):
 
 class ReturnOrderLine(models.Model):
     _name = 'return.order.line'
+    _description = "Return Order Lines"
+
     return_id = fields.Many2one(comodel_name="return.order", string="Return", )
     product_id = fields.Many2one(comodel_name="product.product", string="Product", required=True)
     description = fields.Char(string="Description", )

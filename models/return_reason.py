@@ -6,6 +6,7 @@ from random import randint
 class ReturnReason(models.Model):
     _name = 'return.reason'
     _rec_name = 'eng_description'
+    _description = "Return Order Reasons"
 
     name = fields.Char(string="code", )
     eng_description = fields.Char(string="English Description", required=True)
