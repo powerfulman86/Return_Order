@@ -1,5 +1,29 @@
 <odoo>
     <data>
+
+        <record id="view_return_order_search" model="ir.ui.view">
+            <field name="name">return.order.search</field>
+            <field name="model">return.order</field>
+            <field name="arch" type="xml">
+                <search string="WishList Search">
+                    <field name="name"/>
+                    <field name="sale_id"/>
+                    <field name="user_id"/>
+                    <field name="partner_id"/>
+                    <field name="customer_ref"/>
+                    <field name="sale_date"/>
+                    <field name="state"/>
+                    <filter string="Code" name="group_by_name" context="{'group_by':'name'}"/>
+                    <filter string="Sale" name="group_by_sale_id" context="{'group_by':'sale_id'}"/>
+                    <filter string="My Orders" name="my_orders" domain="[('user_id', '=', uid)]"/>
+                    <filter string="Customer" name="group_parrtner_id" context="{'group_by':'partner_id'}"/>
+                    <filter string="Customer Ref" name="group_customer_ref" context="{'group_by':'customer_ref'}"/>
+                    <filter string="Sale Date" name="group_by_sale_date" context="{'group_by':'sale_date'}"/>
+                    <filter string="State" name="group_by_state" context="{'group_by':'state'}"/>
+                </search>
+            </field>
+        </record>
+
         <record id="view_return_order_tree" model="ir.ui.view">
             <field name="name">view.return.order.tree</field>
             <field name="model">return.order</field>
@@ -7,6 +31,7 @@
                 <tree string="Return Order">
                     <field name="name"/>
                     <field name="sale_id"/>
+                    <field name="user_id"/>
                     <field name="partner_id"/>
                     <field name="customer_ref"/>
                     <field name="sale_date"/>
@@ -14,6 +39,7 @@
                 </tree>
             </field>
         </record>
+
         <record id="return_action_refund" model="ir.actions.act_window">
             <field name="name">Refund</field>
             <field name="type">ir.actions.act_window</field>
@@ -115,6 +141,13 @@
                                     </tree>
                                 </field>
                             </page>
+                            <page string="Other Info">
+                                <group>
+                                    <group>
+                                        <field name="user_id"/>
+                                    </group>
+                                </group>
+                            </page>
 
                         </notebook>
                     </sheet>
@@ -133,6 +166,8 @@
             <field name="res_model">return.order</field>
             <field name="view_mode">tree,form</field>
             <field name="domain">[('state', '!=', ['draft'])]</field>
+            <field name="context">{ 'search_default_my_orders': uid }</field>
+
         </record>
         <record id="action_request_return_order_view" model="ir.actions.act_window">
             <field name="name">Return Order</field>
@@ -140,6 +175,7 @@
             <field name="res_model">return.order</field>
             <field name="view_mode">tree,form</field>
             <field name="domain">[('state', '=', ['draft'])]</field>
+            <field name="context">{ 'search_default_my_orders': uid }</field>
         </record>
 
         <menuitem id="menu_request_return_order_view" name="Request for Return" parent="menu_return_order"
