@@ -69,7 +69,7 @@
         <menuitem
                 id="menu_return_root"
                 name="Return Order"
-                groups="stock.group_stock_manager,stock.group_stock_user"
+                groups="stock.group_stock_manager,stock.group_stock_user,Return_Order.return_group_user"
                 web_icon="Return_Order,static/description/icon.png"
                 sequence="13"/>
         <menuitem id="menu_return_order" name="Orders" parent="menu_return_root" sequence="2"/>
