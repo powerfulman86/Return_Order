@@ -66,6 +66,7 @@
             <field name="view_mode">tree,form</field>
             <field name="domain">[('invoice_ids', '!=', False)]</field>
         </record>
+
         <menuitem
                 id="menu_return_root"
                 name="Return Order"
