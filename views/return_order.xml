@@ -53,6 +53,25 @@
             <field name="target">new</field>
         </record>
 
+        <record id="return_order_pivot" model="ir.ui.view">
+            <field name="name">return.order.pivot</field>
+            <field name="model">return.order</field>
+            <field name="arch" type="xml">
+                <pivot string="Event">
+                    <field name="name" type="row"/>
+<!--                    <field name="sale_id" type="row"/>-->
+<!--                    <field name="user_id" type="row"/>-->
+<!--                    <field name="partner_id" type="row"/>-->
+<!--                    <field name="customer_ref" type="row"/> -->
+<!--                    <field name="state" type="row"/>-->
+
+                    <field name="sale_id" type="measure"/>
+                    <field name="user_id" type="measure"/>
+                    <field name="partner_id" type="measure"/>
+                </pivot>
+            </field>
+        </record>
+
         <record id="view_request_return_order_form" model="ir.ui.view">
             <field name="name">view.return.order.form</field>
             <field name="model">return.order</field>
@@ -164,7 +183,7 @@
             <field name="name">Return Order</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">return.order</field>
-            <field name="view_mode">tree,form</field>
+            <field name="view_mode">tree,form,pivot</field>
             <field name="domain">[('state', '!=', ['draft'])]</field>
             <field name="context">{ 'search_default_my_orders': uid }</field>
 
@@ -173,7 +192,7 @@
             <field name="name">Return Order</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">return.order</field>
-            <field name="view_mode">tree,form</field>
+            <field name="view_mode">tree,form,pivot</field>
             <field name="domain">[('state', '=', ['draft'])]</field>
             <field name="context">{ 'search_default_my_orders': uid }</field>
         </record>

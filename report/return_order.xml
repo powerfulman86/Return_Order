@@ -1,0 +1,104 @@
+<odoo>
+    <data>
+        <template id="return_order_template">
+            <t t-call="web.html_container">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <t t-foreach="docs" t-as="o">
+                            <h2>Return Order #
+                                <span t-field="o.name"/>
+                            </h2>
+                            <div id="information1" class="row mt32 mb32">
+                                <div t-if="o.partner_id" class="col-3 bm-2">
+                                    <strong>Customer :</strong>
+                                    <p t-field="o.partner_id"  class="m-0"/>
+                                </div>
+                                <div t-if="o.customer_ref" class="col-3 bm-2">
+                                    <strong>Your Reference:</strong>
+                                    <p t-field="o.customer_ref" class="m-0"/>
+                                </div>
+                                <div t-if="o.date" class="col-3 bm-2">
+                                    <strong>Return Date:</strong>
+                                    <p t-field="o.date" class="m-0"/>
+                                </div>
+                                <div t-if="o.reason_id" class="col-3 bm-2">
+                                    <strong>Return Reason :</strong>
+                                    <p t-field="o.reason_id" class="m-0"/>
+                                </div>
+                            </div>
+                            <div id="information2" class="row mt32 mb32">
+                                <div t-if="o.sale_id" class="col-3 bm-2">
+                                    <strong>Sale Order :</strong>
+                                    <p t-field="o.sale_id.name" class="m-0"/>
+                                </div>
+                                <div t-if="o.sale_date" class="col-3 bm-2">
+                                    <strong>Sale Date :</strong>
+                                    <p t-field="o.sale_date" class="m-0"/>
+                                </div>
+                                <div t-if="o.delivery_id" class="col-3 bm-2">
+                                    <strong>Delivery :</strong>
+                                    <p t-field="o.delivery_id" class="m-0"/>
+                                </div>
+                                <div t-if="o.delivery_date" class="col-3 bm-2">
+                                    <strong>Delivery Date :</strong>
+                                    <p t-field="o.delivery_date" class="m-0"/>
+                                </div>
+                            </div>
+                            <table class="table table-condensed">
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Description</th>
+                                        <th>Delivered Qty</th>
+                                        <th>Qty</th>
+                                        <th>Unit of Measure</th>
+                                        <th>Price</th>
+                                        <th>Subtotal</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    <tr t-foreach="o.return_line_ids" t-as="line">
+                                        <td>
+                                            <span t-field="line.product_id"/>
+                                        </td>
+                                        <td>
+                                            <span t-field="line.description"/>
+                                        </td>
+                                        <td>
+                                            <span t-field="line.delivered_qty"/>
+                                        </td>
+                                        <td>
+                                            <span t-field="line.qty"/>
+                                        </td>
+                                        <td>
+                                            <span t-field="line.uom_id"/>
+                                        </td>
+                                        <td>
+                                            <span t-field="line.price_unit"/>
+                                        </td>
+                                        <td>
+                                            <span t-field="line.price_subtotal"/>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                        </t>
+                    </div>
+                </t>
+            </t>
+        </template>
+
+
+        <report
+                id="return_order_report"
+                model="return.order"
+                report_type="qweb-pdf"
+                string="Return Order"
+                menu="True"
+                name="Return_Order.return_order_template"
+                file="Return_Order.return_order_template"
+        />
+    </data>
+</odoo>
