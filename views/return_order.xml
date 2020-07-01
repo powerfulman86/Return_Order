@@ -59,11 +59,11 @@
             <field name="arch" type="xml">
                 <pivot string="Event">
                     <field name="name" type="row"/>
-<!--                    <field name="sale_id" type="row"/>-->
-<!--                    <field name="user_id" type="row"/>-->
-<!--                    <field name="partner_id" type="row"/>-->
-<!--                    <field name="customer_ref" type="row"/> -->
-<!--                    <field name="state" type="row"/>-->
+                    <!--                    <field name="sale_id" type="row"/>-->
+                    <!--                    <field name="user_id" type="row"/>-->
+                    <!--                    <field name="partner_id" type="row"/>-->
+                    <!--                    <field name="customer_ref" type="row"/> -->
+                    <!--                    <field name="state" type="row"/>-->
 
                     <field name="sale_id" type="measure"/>
                     <field name="user_id" type="measure"/>
@@ -78,13 +78,25 @@
             <field name="arch" type="xml">
                 <form string="Request Return Order">
                     <header>
-                        <button name="action_reviewed" states="draft" class="oe_highlight" type="object"
-                                string="Reviewed"/>
-                        <button name="action_approve" states="reviewed" class="oe_highlight" type="object"
-                                groups="Return_Order.return_group_supervisor,Return_Order.return_group_manager"
-                                string="Return Order"/>
+                        <button name="action_approve" states="draft" class="oe_highlight" type="object"
+                                string="Approve"/>
+                        <button name="action_on_delivery" states="approved" class="oe_highlight" type="object"
+                                string="On Delivery"/>
+                        <button name="action_reschedule" states="on_delivery" class="oe_highlight" type="object"
+                                string="Reschedule"/>
+                        <button name="action_under_inspection" states="reschedule" class="oe_highlight" type="object"
+                                string="Under Inspection"/>
+                        <button name="action_inspected" states="under_inspection" class="oe_highlight" type="object"
+                                string="Inspected"/>
+                        <button name="action_received" states="inspected" class="oe_highlight" type="object"
+                                string="Received"/>
+                        <button name="action_cancel" states="on_delivery" class="oe_highlight" type="object"
+                                string="Cancel"/>
+                        <button name="action_done" states="received" class="oe_highlight" type="object" string="done"/>
+
                         <button name="action_draft" type="object" string="reset to draft"
-                                states="reviewed,approve"/>
+                                groups="Return_Order.return_group_supervisor,Return_Order.return_group_manager"
+                                states="reviewed,approved"/>
 
                         <button name="Return_Order.return_action_refund" type="action" string="Refund"
                                 groups="account.group_account_invoice"
@@ -102,7 +114,7 @@
                                 <field name="ticket_id" invisible="1"/>
                             </button>
                             <button name="" type="object" class="oe_stat_button"
-                                    icon="fa-pencil-square-o"
+                                    icon="fa-truck"
                                     attrs="{'invisible': [('receipt_count', '=', 0)]}">
                                 <field name="receipt_count" widget="statinfo" string="Receipt"/>
                             </button>
@@ -112,7 +124,7 @@
                                 <field name="invoices_count" widget="statinfo" string="credit note"/>
                             </button>
                             <button name="action_picking_view" type="object" class="oe_stat_button"
-                                    icon="fa-pencil-square-o"
+                                    icon="fa-truck"
                                     attrs="{'invisible': [('picking_count', '=', 0)]}">
                                 <field name="picking_count" widget="statinfo" string="receipt"/>
                             </button>
@@ -133,6 +145,7 @@
                                 <field name="invoice_ids" invisible="1"/>
                                 <field name="reason_id" options="{'no_create':True}"
                                        attrs="{'readonly': [('state', '!=', 'draft' )]}"/>
+                                <field name="partner_shipping_id"/>
                             </group>
                             <group>
                                 <field name="date" attrs="{'readonly': [('state', '!=', 'draft' )]}"/>
@@ -143,7 +156,7 @@
                                        attrs="{'readonly': [('state', '!=', 'draft' )]}"/>
                                 <field name="delivery_date"/>
                                 <field name="with_refund"
-                                       attrs="{'invisible': [('state', '!=', 'approve' )]}"/>
+                                       attrs="{'invisible': [('state', '!=', 'approved' )]}"/>
                             </group>
                         </group>
                         <notebook>
@@ -152,6 +165,7 @@
                                     <tree string="" editable="bottom"> <!-- decoration-info="price_subtotal == 0" -->
                                         <field name="product_id" domain="[('type', '=', 'service')]"/>
                                         <field name="description"/>
+                                        <field name="celebrity_id"/>
                                         <field name="delivered_qty" readonly="1"/>
                                         <field name="qty"/>
                                         <field name="uom_id"/>
@@ -167,8 +181,26 @@
                                     </group>
                                 </group>
                             </page>
-
                         </notebook>
+                        <div class="oe_right">
+                            <field name="is_all_service" invisible="1"/>
+                            <field name="carrier_id" invisible="1"/>
+                            <button
+                                    string="Add shipping"
+                                    name="%(action_return_delivery)d"
+                                    type="action"
+                                    attrs="{'invisible': ['|', ('is_all_service', '!=', False), ('carrier_id', '!=', False)]}"
+                            />
+                            <button
+                                    string="Update shipping cost"
+                                    name="%(action_return_delivery)d"
+                                    type="action"
+                                    class="text-warning btn-secondary"
+                                    attrs="{'invisible': ['|', ('is_all_service', '!=', True), ('carrier_id', '=', False)]}"
+                            />
+                        </div>
+
+
                     </sheet>
                     <div class="oe_chatter">
                         <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>

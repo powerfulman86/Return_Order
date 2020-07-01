@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="return_delivery_method_wizard" model="ir.ui.view">
+        <field name="name">delivery.method.wizard</field>
+        <field name="model">delivery.method.wizard</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="delivery method ">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="return_id" invisible="1" />
+                            <field name="carrier_set" invisible="1" />
+                            <field name="carrier_id" options="{'no_create': True}" />
+                            <field name="cost"  />
+                        </group>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="transfer_to_order" type="object" string="Add Delivery Method"
+                            attrs="{'invisible': [('carrier_set', '!=', False)]}" class="oe_highlight"/>
+                    <button name="update_order" type="object" string="Update Delivery Method"
+                            attrs="{'invisible': [('carrier_set', '=', False)]}" class="oe_highlight"/>
+                    or
+                    <button special="cancel" string="Cancel"/>
+                </footer>
+
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_return_delivery">
+        <field name="name">Update Delivery Method</field>
+        <field name="res_model">delivery.method.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="context">{'default_return_id': active_id}</field>
+        <field name="target">new</field>
+    </record>
+</odoo>
