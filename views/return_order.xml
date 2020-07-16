@@ -177,6 +177,8 @@
                             <page string="Other Info">
                                 <group>
                                     <group>
+                                        <field name="warehouse_id"/>
+                                        <field name="receipt_date"/>
                                         <field name="user_id"/>
                                     </group>
                                 </group>

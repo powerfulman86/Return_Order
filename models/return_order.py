@@ -10,13 +10,15 @@ class ReturnOrder(models.Model):
     _description = "Return Order"
 
     name = fields.Char(string="code", track_visibility='always')
-    date = fields.Date(string="Date", default=fields.Date.context_today)
+    date = fields.Datetime(string="", required=False, default=fields.Datetime.now)
     sale_id = fields.Many2one(comodel_name="sale.order", string="Sale Order", required=True, track_visibility='always')
     sale_date = fields.Datetime(string="Sale Order Date", related='sale_id.date_order')
+    receipt_date = fields.Datetime(string="Receipt Date")
     partner_id = fields.Many2one('res.partner', 'Customer', required=True)
     customer_ref = fields.Char(compute="_compute_partner_code")
     delivery_id = fields.Many2one(comodel_name="stock.picking", string="delivery number", required=True,
                                   track_visibility='always')
+    warehouse_id = fields.Many2one(comodel_name="stock.warehouse", string="Warehouse receipt", required= True)
     user_id = fields.Many2one('res.users', string='Responsible', default=lambda self: self.env.user)
     delivery_date = fields.Datetime(string="Delivery Date", related='delivery_id.scheduled_date')
     reason_id = fields.Many2one(comodel_name="return.reason", string="reason to return", track_visibility='always')
@@ -128,8 +130,12 @@ class ReturnOrder(models.Model):
         for rec in self:
             if not rec.env['ir.config_parameter'].sudo().get_param('base_setup.expense_account_id'):
                 raise ValidationError(_("Please Enter Celebrity Expense Account in settings"))
+            # if not rec.env['ir.config_parameter'].sudo().get_param('base_setup.receipt_warehouse_id'):
+            #     raise ValidationError(_("Please Enter Warehouse receipt in settings"))
+            picking_type_id = self.env['stock.picking.type'].search([('warehouse_id', '=', rec.warehouse_id.id),
+                                                                     ('code', '=', 'incoming')], limit=1)
             location = self.env.ref('stock.stock_location_stock')
-            picking_type_id = self.env['stock.picking.type'].search([('code', '=', 'incoming')], limit=1)
+            # picking_type_id = self.env['stock.picking.type'].search([('code', '=', 'incoming')], limit=1)
             picking = self.env['stock.picking'].create({
                 'partner_id': rec.partner_id.id,
                 'picking_type_id': picking_type_id.id,
@@ -170,29 +176,35 @@ class ReturnOrder(models.Model):
             picking.action_confirm()
             journal_id = self.env['account.journal'].browse(
                 int(self.env['ir.config_parameter'].sudo().get_param('base_setup.so_journal_id')))
-            move_id = self.env['account.move'].create({
-                'journal_id': journal_id.id,
-                'partner_id': self.partner_id.id,
-                'ref': "shipping for return , " + self.name,
-            })
+            create_move = 0
             for line in rec.return_line_ids:
                 if line.product_id.type == 'service':
-                    self.env['account.move.line'].with_context(check_move_validity=False).create({
-                        'move_id': move_id.id,
-                        'name': line.product_id.name,
-                        'account_id': line.product_id.property_account_income_id.id if line.product_id.property_account_income_id else line.product_id.categ_id.property_account_income_categ_id.id,
-                        'credit': line.price_subtotal,
-                        'debit': 0.0,
-                    })
-                    self.env['account.move.line'].with_context(check_move_validity=False).create({
-                        'move_id': move_id.id,
-                        'name': 'Expenses Account',
-                        'account_id': int(
-                            rec.env['ir.config_parameter'].sudo().get_param('base_setup.expense_account_id')),
-                        'credit': 0.0,
-                        'debit': line.price_subtotal,
-                    })
-            move_id.post()
+                    create_move = 1
+                    break
+            if create_move == 1:
+                move_id = self.env['account.move'].create({
+                    'journal_id': journal_id.id,
+                    'partner_id': self.partner_id.id,
+                    'ref': "shipping for return , " + self.name,
+                })
+                for line in rec.return_line_ids:
+                    if line.product_id.type == 'service':
+                        self.env['account.move.line'].with_context(check_move_validity=False).create({
+                            'move_id': move_id.id,
+                            'name': line.product_id.name,
+                            'account_id': line.product_id.property_account_income_id.id if line.product_id.property_account_income_id else line.product_id.categ_id.property_account_income_categ_id.id,
+                            'credit': line.price_subtotal,
+                            'debit': 0.0,
+                        })
+                        self.env['account.move.line'].with_context(check_move_validity=False).create({
+                            'move_id': move_id.id,
+                            'name': 'Expenses Account',
+                            'account_id': int(
+                                rec.env['ir.config_parameter'].sudo().get_param('base_setup.expense_account_id')),
+                            'credit': 0.0,
+                            'debit': line.price_subtotal,
+                        })
+                move_id.post()
             rec.state = 'approved'
 
     def action_on_delivery(self):
