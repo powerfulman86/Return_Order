@@ -84,22 +84,26 @@ class ReturnOrder(models.Model):
         for rec in self:
             rec.customer_ref = rec.partner_id.code
 
-    @api.onchange('partner_id', 'sale_id')
-    def _onchange_partner_id(self):
-        for rec in self:
-            addr = rec.partner_id.address_get(['delivery'])
-            rec.partner_shipping_id = addr and addr.get('delivery')
-
-            rec.delivery_id = False
-            if rec.partner_id:
-                sale_ids = self.env['sale.order'].search([('partner_id', '=', rec.partner_id.id),
-                                                          ('state', 'not in', ['draft', 'cancel'])])
-                if sale_ids:
-                    return {'domain': {'sale_id': [('id', 'in', sale_ids.ids)]}}
-                else:
-                    return {'domain': {'sale_id': [('id', '=', False)]}}
-            else:
-                return {'domain': {'sale_id': [('id', '=', False)]}}
+    # @api.onchange('partner_id', 'sale_id')
+    # def _onchange_partner_id(self):
+    #     for rec in self:
+    #         addr = rec.partner_id.address_get(['delivery'])
+    #         rec.partner_shipping_id = addr and addr.get('delivery')
+    #         print(">11111111111111>")
+    #         rec.delivery_id = False
+    #         if rec.partner_id:
+    #             print(">2222222222222222222>")
+    #             sale_ids = self.env['sale.order'].search([('partner_id', '=', rec.partner_id.id),
+    #                                                       ('state', 'not in', ['draft', 'cancel'])])
+    #             if sale_ids:
+    #                 print(">33333333333333>")
+    #                 return {'domain': {'sale_id': [('id', 'in', sale_ids.ids)]}}
+    #             else:
+    #                 print(">444444444444444>")
+    #                 return {'domain': {'sale_id': [('id', '=', False)]}}
+    #         else:
+    #             print(">555555555555555555555>")
+    #             return {'domain': {'sale_id': [('id', '=', False)]}}
 
     @api.onchange('sale_id', 'delivery_id')
     def _onchange_sale_id(self):

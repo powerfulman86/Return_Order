@@ -150,6 +150,7 @@
                             <group>
                                 <field name="date" attrs="{'readonly': [('state', '!=', 'draft' )]}"/>
                                 <field name="sale_id" options="{'no_create':True}"
+                                       domain="[('partner_id', '=', partner_id)]"
                                        attrs="{'readonly': [('state', '!=', 'draft' )]}"/>
                                 <field name="sale_date"/>
                                 <field name="delivery_id" options="{'no_create':True}"
@@ -162,7 +163,7 @@
                         <notebook>
                             <page string="Products">
                                 <field name="return_line_ids" attrs="{'readonly': [('state', '!=', 'draft' )]}">
-                                    <tree string="" editable="bottom"> <!-- decoration-info="price_subtotal == 0" -->
+                                    <tree string="" editable="bottom" create="false"> <!-- decoration-info="price_subtotal == 0" -->
                                         <field name="product_id" domain="[('type', '=', 'service')]"/>
                                         <field name="description"/>
                                         <field name="celebrity_id"/>
