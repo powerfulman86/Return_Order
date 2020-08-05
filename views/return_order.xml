@@ -34,6 +34,7 @@
                     <field name="user_id"/>
                     <field name="partner_id"/>
                     <field name="customer_ref"/>
+                    <field name="create_date"/>
                     <field name="sale_date"/>
                     <field name="state"/>
                 </tree>
@@ -163,46 +164,66 @@
                         <notebook>
                             <page string="Products">
                                 <field name="return_line_ids" attrs="{'readonly': [('state', '!=', 'draft' )]}">
-                                    <tree string="" editable="bottom" create="false"> <!-- decoration-info="price_subtotal == 0" -->
-                                        <field name="product_id" domain="[('type', '=', 'service')]"/>
-                                        <field name="description"/>
-                                        <field name="celebrity_id"/>
+                                    <tree string="" editable="bottom"
+                                          create="false"> <!-- decoration-info="price_subtotal == 0" -->
+                                        <field name="product_id" readonly="1"/> <!--domain="[('type','=','service')]"-->
+                                        <field name="description" readonly="1"/>
+                                        <field name="celebrity_id" readonly="1"/>
                                         <field name="delivered_qty" readonly="1"/>
                                         <field name="qty"/>
-                                        <field name="uom_id"/>
-                                        <field name="price_unit"/>
-                                        <field name="price_subtotal"/>
+                                        <field name="uom_id" readonly="1"/>
+                                        <field name="price_unit" readonly="1"/>
+                                        <field name="price_subtotal" readonly="1"/>
                                     </tree>
                                 </field>
+                                <div class="oe_right">
+                                    <field name="is_all_service" invisible="1"/>
+                                    <field name="carrier_id" invisible="1"/>
+                                    <button
+                                            string="Add shipping"
+                                            name="%(action_return_delivery)d"
+                                            type="action"
+                                            attrs="{'invisible': ['|', ('is_all_service', '!=', False), ('carrier_id', '!=', False)]}"
+                                    />
+                                    <button
+                                            string="Update shipping cost"
+                                            name="%(action_return_delivery)d"
+                                            type="action"
+                                            class="text-warning btn-secondary"
+                                            attrs="{'invisible': ['|', ('is_all_service', '!=', True), ('carrier_id', '=', False)]}"
+                                    />
+                                </div>
+                                <group name="note_group" col="6">
+                                    <group colspan="4">
+                                        <field name="note" nolabel="1" placeholder="Notes..."/>
+                                    </group>
+                                    <group class="oe_subtotal_footer oe_right" colspan="2" name="return_total">
+<!--                                        <field name="amount_untaxed" widget='monetary'-->
+<!--                                               options="{'currency_field': 'currency_id'}"/>-->
+<!--                                        <field name="amount_tax" widget='monetary'-->
+<!--                                               options="{'currency_field': 'currency_id'}"/>-->
+                                        <div class="oe_subtotal_footer_separator oe_inline o_td_label">
+                                            <label for="amount_total"/>
+                                        </div>
+                                        <field name="amount_total" nolabel="1" class="oe_subtotal_footer_separator"
+                                               widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                                    </group>
+                                    <div class="oe_clear"/>
+                                </group>
+
                             </page>
                             <page string="Other Info">
                                 <group>
                                     <group>
-                                        <field name="warehouse_id"/>
+                                        <field name="company_id" invisible="1"/>
+                                        <field name="warehouse_id" invisible="1"/>
+                                        <field name="picking_type_id"/>
                                         <field name="receipt_date"/>
                                         <field name="user_id"/>
                                     </group>
                                 </group>
                             </page>
                         </notebook>
-                        <div class="oe_right">
-                            <field name="is_all_service" invisible="1"/>
-                            <field name="carrier_id" invisible="1"/>
-                            <button
-                                    string="Add shipping"
-                                    name="%(action_return_delivery)d"
-                                    type="action"
-                                    attrs="{'invisible': ['|', ('is_all_service', '!=', False), ('carrier_id', '!=', False)]}"
-                            />
-                            <button
-                                    string="Update shipping cost"
-                                    name="%(action_return_delivery)d"
-                                    type="action"
-                                    class="text-warning btn-secondary"
-                                    attrs="{'invisible': ['|', ('is_all_service', '!=', True), ('carrier_id', '=', False)]}"
-                            />
-                        </div>
-
 
                     </sheet>
                     <div class="oe_chatter">

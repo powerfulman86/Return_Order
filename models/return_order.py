@@ -9,16 +9,31 @@ class ReturnOrder(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = "Return Order"
 
+    @api.model
+    def _get_picking_type(self, company_id):
+        picking_type = self.env['stock.picking.type'].search([('code', '=', 'incoming'), ('warehouse_id.company_id', '=', company_id)])
+        if not picking_type:
+            picking_type = self.env['stock.picking.type'].search([('code', '=', 'incoming'), ('warehouse_id', '=', False)])
+        return picking_type[:1]
+
+    @api.model
+    def _default_picking_type(self):
+        return self._get_picking_type(self.env.context.get('company_id') or self.env.company.id)
+
     name = fields.Char(string="code", track_visibility='always')
     date = fields.Datetime(string="", required=False, default=fields.Datetime.now)
     sale_id = fields.Many2one(comodel_name="sale.order", string="Sale Order", required=True, track_visibility='always')
     sale_date = fields.Datetime(string="Sale Order Date", related='sale_id.date_order')
     receipt_date = fields.Datetime(string="Receipt Date")
+    create_date = fields.Datetime(string="Create Date", required=False, default=fields.Datetime.now)
     partner_id = fields.Many2one('res.partner', 'Customer', required=True)
     customer_ref = fields.Char(compute="_compute_partner_code")
     delivery_id = fields.Many2one(comodel_name="stock.picking", string="delivery number", required=True,
                                   track_visibility='always')
-    warehouse_id = fields.Many2one(comodel_name="stock.warehouse", string="Warehouse receipt", required= True)
+    company_id = fields.Many2one('res.company', 'Company', required=True, default=lambda self: self.env.company.id)
+    warehouse_id = fields.Many2one(comodel_name="stock.warehouse", string="Warehouse receipt")
+    picking_type_id = fields.Many2one('stock.picking.type', 'Deliver To', required=True, default=_default_picking_type, domain="['|', ('warehouse_id', '=', False), ('warehouse_id.company_id', '=', company_id)]",
+    help="This will determine operation type for return")
     user_id = fields.Many2one('res.users', string='Responsible', default=lambda self: self.env.user)
     delivery_date = fields.Datetime(string="Delivery Date", related='delivery_id.scheduled_date')
     reason_id = fields.Many2one(comodel_name="return.reason", string="reason to return", track_visibility='always')
@@ -45,6 +60,17 @@ class ReturnOrder(models.Model):
     is_all_service = fields.Boolean(string="all services", compute="_count_service_product")
     carrier_id = fields.Many2one('delivery.carrier', 'Carrier')
     partner_shipping_id = fields.Many2one(comodel_name="res.partner", string="Pick UP Address")
+    note = fields.Text(string="note", required=False, )
+    amount_total = fields.Monetary(string='Total', store=True, readonly=True, compute='_compute_amount')
+    currency_id = fields.Many2one(related="sale_id.currency_id",  store=True)
+
+    @api.depends('return_line_ids')
+    def _compute_amount(self):
+        for rec in self:
+            total = 0
+            for line in rec.return_line_ids:
+                total += line.price_subtotal
+            rec.amount_total = total
 
     @api.depends('return_line_ids')
     def _count_service_product(self):
@@ -84,6 +110,12 @@ class ReturnOrder(models.Model):
         for rec in self:
             rec.customer_ref = rec.partner_id.code
 
+    @api.onchange('partner_id')
+    def _onchange_partner_id(self):
+        for rec in self:
+            addr = rec.partner_id.address_get(['delivery'])
+            rec.partner_shipping_id = addr and addr.get('delivery')
+
     # @api.onchange('partner_id', 'sale_id')
     # def _onchange_partner_id(self):
     #     for rec in self:
@@ -120,6 +152,7 @@ class ReturnOrder(models.Model):
             for line in rec.delivery_id.move_ids_without_package:
                 return_id = self.env['return.order.line'].create({
                     'product_id': line.product_id.id,
+                    'description': line.product_id.name,
                     'delivered_qty': line.quantity_done,
                     'uom_id': line.product_uom.id,
                 })
@@ -136,14 +169,14 @@ class ReturnOrder(models.Model):
                 raise ValidationError(_("Please Enter Celebrity Expense Account in settings"))
             # if not rec.env['ir.config_parameter'].sudo().get_param('base_setup.receipt_warehouse_id'):
             #     raise ValidationError(_("Please Enter Warehouse receipt in settings"))
-            picking_type_id = self.env['stock.picking.type'].search([('warehouse_id', '=', rec.warehouse_id.id),
-                                                                     ('code', '=', 'incoming')], limit=1)
+            # picking_type_id = self.env['stock.picking.type'].search([('warehouse_id', '=', rec.warehouse_id.id),
+            #                                                          ('code', '=', 'incoming')], limit=1)
             location = self.env.ref('stock.stock_location_stock')
             # picking_type_id = self.env['stock.picking.type'].search([('code', '=', 'incoming')], limit=1)
             picking = self.env['stock.picking'].create({
                 'partner_id': rec.partner_id.id,
-                'picking_type_id': picking_type_id.id,
-                'location_dest_id': picking_type_id.default_location_dest_id.id or location.id,
+                'picking_type_id': rec.picking_type_id.id,
+                'location_dest_id': rec.picking_type_id.default_location_dest_id.id or location.id,
                 'location_id': rec.partner_id.property_stock_supplier.id if rec.partner_id.property_stock_supplier else picking_type_id.default_location_dest_id.id,
                 'origin': rec.name,
                 'user_id': False,
@@ -167,14 +200,14 @@ class ReturnOrder(models.Model):
                         'purchase_line_id': False,
                         'company_id': self.env.user.company_id.id,
                         'price_unit': line.price_unit,
-                        'picking_type_id': picking_type_id.id,
+                        'picking_type_id': rec.picking_type_id.id,
                         'group_id': False,
                         'origin': line.return_id.name,
                         'propagate_date': fields.Date.today(),
                         'description_picking': line.product_id._get_description(picking_type_id),
-                        'route_ids': picking_type_id.warehouse_id and [
-                            (6, 0, [x.id for x in picking_type_id.warehouse_id.route_ids])] or [],
-                        'warehouse_id': picking_type_id.warehouse_id.id,
+                        'route_ids': rec.picking_type_id.warehouse_id and [
+                            (6, 0, [x.id for x in rec.picking_type_id.warehouse_id.route_ids])] or [],
+                        'warehouse_id': rec.picking_type_id.warehouse_id.id,
                     })
             rec.picking_ids = [(4, picking.id)]
             picking.action_confirm()
