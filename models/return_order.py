@@ -204,7 +204,7 @@ class ReturnOrder(models.Model):
                         'group_id': False,
                         'origin': line.return_id.name,
                         'propagate_date': fields.Date.today(),
-                        'description_picking': line.product_id._get_description(picking_type_id),
+                        'description_picking': line.product_id._get_description(rec.picking_type_id),
                         'route_ids': rec.picking_type_id.warehouse_id and [
                             (6, 0, [x.id for x in rec.picking_type_id.warehouse_id.route_ids])] or [],
                         'warehouse_id': rec.picking_type_id.warehouse_id.id,
