@@ -84,7 +84,7 @@
                                 string="On Delivery"/>
                         <button name="action_reschedule" states="on_delivery" class="oe_highlight" type="object"
                                 string="Reschedule"/>
-                        <button name="action_under_inspection" states="reschedule" class="oe_highlight" type="object"
+                        <button name="action_under_inspection" states="reschedule,on_delivery" class="oe_highlight" type="object"
                                 string="Under Inspection"/>
                         <button name="action_inspected" states="under_inspection" class="oe_highlight" type="object"
                                 string="Inspected"/>
@@ -171,6 +171,16 @@
                                         <field name="uom_id"/>
                                         <field name="price_unit"/>
                                         <field name="price_subtotal"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page string="Journals">
+                                <field name="move_ids" readonly="True">
+                                    <tree >
+                                        <field name="account_id"/>
+                                        <field name="name"/>
+                                        <field name="debit"/>
+                                        <field name="credit"/>
                                     </tree>
                                 </field>
                             </page>

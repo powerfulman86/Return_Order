@@ -8,3 +8,8 @@ class AccountMove(models.Model):
     _inherit = 'account.move'
 
     return_id = fields.Many2one(comodel_name="return.order")
+
+class AccountMoveLine(models.Model):
+    _inherit = 'account.move.line'
+
+    return_id = fields.Many2one(comodel_name="return.order")
