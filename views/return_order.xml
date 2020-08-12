@@ -91,7 +91,7 @@
                         <button name="action_received" states="inspected" class="oe_highlight" type="object"
                                 string="Received"/>
                         <button name="action_cancel" states="on_delivery" class="oe_highlight" type="object"
-                                string="Cancel"/>
+                                string="Cancel" />
                         <button name="action_done" states="received" class="oe_highlight" type="object" string="done"/>
 
                         <button name="action_draft" type="object" string="reset to draft"
