@@ -84,8 +84,9 @@
                   action="action_return_order_to_receipt" sequence="2"
                   groups="Return_Order.return_group_supervisor,Return_Order.return_group_manager"/>
         <!-- Action Must be Change-->
-        <menuitem id="menu_return_reporting" name="Reporting" parent="menu_return_root"
-                  action="action_return_reason_view" sequence="3"/>
+        <menuitem id="menu_return_reporting" name="Reporting" parent="menu_return_root"  sequence="3"/>
+        <menuitem id="menu_return_reporting_id" name="Reporting" parent="menu_return_reporting"
+                  action="action_return_reason_view" />
 
         <menuitem id="menu_return_configuration" name="configuration" parent="menu_return_root" sequence="4"/>
         <menuitem id="menu_return_configuration_settings" name="Settings" action="return_order_config"

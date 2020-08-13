@@ -20,6 +20,7 @@
         'views/return_order.xml',
         'views/sale.xml',
         'report/return_order.xml',
+        # 'report/return_report.xml',
     ],
     'images': ['static/description/icon.png'],
     'installable': True,

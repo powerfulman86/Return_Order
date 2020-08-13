@@ -1,0 +1,63 @@
+<odoo>
+    <data>
+        <record id="view_return_order_product_pivot" model="ir.ui.view">
+            <field name="name">return.report.pivot</field>
+            <field name="model">return.report</field>
+            <field name="arch" type="xml">
+                <pivot string="returns Analysis" disable_linking="True">
+                    <field name="name" type="col"/>
+                    <field name="date" interval="month" type="row"/>
+                    <field name="delivery_id" type="measure"/>
+                </pivot>
+            </field>
+        </record>
+
+        <record id="view_return_order_product_graph" model="ir.ui.view">
+            <field name="name">return.report.graph</field>
+            <field name="model">return.report</field>
+            <field name="arch" type="xml">
+                <graph string="returns Analysis" type="line">
+                    <field name="date" type="row" interval="day"/>
+                    <field name="delivery_id" type="measure"/>
+                </graph>
+            </field>
+        </record>
+
+        <record id="view_return_order_product_search" model="ir.ui.view">
+            <field name="name">return.report.search</field>
+            <field name="model">return.report</field>
+            <field name="arch" type="xml">
+                <search string="returns Analysis">
+                    <filter string="Date" name="year" invisible="1" date="date" default_period="this_year"/>
+                    <filter string="Sale Order" name="sale_id" context="{'group_by':'sale_id'}"/>
+                    <filter string="Sale Dare Country" name="sale_date" context="{'group_by':'sale_date'}"/>
+                    <filter string="Customer" name="partner_id" context="{'group_by':'partner_id'}"/>
+                    <filter string="Customer Ref Country" name="customer_ref" context="{'group_by':'customer_ref'}"/>
+                    <filter string="Delivery" name="delivery_id" context="{'group_by':'delivery_id'}"/>
+                    <filter string="Delivery Date Country" name="delivery_date" context="{'group_by':'delivery_date'}"/>
+                    <filter string="Reason" name="reason_id" context="{'group_by':'reason_id'}"/>
+                    <filter string="Ticket" name="ticket_id" context="{'group_by':'ticket_id'}"/>
+                    <separator/>
+                    <field name="sale_id"/>
+                    <field name="sale_date"/>
+                    <field name="partner_id"/>
+                    <field name="customer_ref"/>
+                    <field name="delivery_id"/>
+                    <field name="delivery_date"/>
+                    <field name="reason_id"/>
+                    <field name="ticket_id"/>
+                 </search>
+            </field>
+        </record>
+        <record id="action_return_report_all1" model="ir.actions.act_window">
+            <field name="name">return Analysis</field>
+            <field name="res_model">return.report</field>
+            <field name="view_mode">graph,pivot</field>
+            <field name="view_id"></field>  <!-- force empty -->
+            <field name="search_view_id" ref="view_return_order_product_search"/>
+        </record>
+
+        <menuitem id="menu_return_order1" name="Return" parent="menu_return_reporting"
+                  action="action_return_report_all1"/>
+    </data>
+</odoo>
