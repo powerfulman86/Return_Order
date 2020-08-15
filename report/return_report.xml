@@ -64,7 +64,7 @@
             <field name="search_view_id" ref="view_return_order_product_search"/>
         </record>
 
-        <menuitem id="menu_return_order1" name="Return" parent="menu_return_reporting"
+        <menuitem id="menu_return_order1" name="Return Report" parent="menu_return_reporting"
                   action="action_return_report_all1"/>
     </data>
 </odoo>
