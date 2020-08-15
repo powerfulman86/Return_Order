@@ -25,7 +25,7 @@ class ReturnReport(models.Model):
     delivery_id = fields.Many2one(comodel_name="stock.picking", string="delivery number", required=True,
                                   track_visibility='always')
     user_id = fields.Many2one('res.users', string='Responsible', default=lambda self: self.env.user)
-    delivery_date = fields.Datetime(string="Delivery Date", related='delivery_id.scheduled_date')
+    # delivery_date = fields.Datetime(string="Delivery Date", related='delivery_id.scheduled_date')
     reason_id = fields.Many2one(comodel_name="return.reason", string="reason to return", track_visibility='always')
     ticket_id = fields.Many2one(comodel_name="helpdesk.ticket", string="Ticket", track_visibility='always')
     return_line_ids = fields.One2many(comodel_name="return.order.line", inverse_name="return_id",
@@ -52,9 +52,15 @@ class ReturnReport(models.Model):
             count(*) as nbr,
             s.name as name,
             s.date as date, 
-            s.partner_id as partner_id,
-            s.user_id as user_id, 
-            s.id as return_id
+            s.partner_id as partner_id, 
+            s.id as return_id, 
+            s.sale_id as sale_id,  
+            s.user_id as user_id,
+            s.reason_id as reason_id,
+            s.ticket_id as ticket_id, 
+            s.delivery_id as delivery_id, 
+            s.with_refund as with_refund, 
+            s.state as state
         """
 
         for field in fields.values():
@@ -78,9 +84,7 @@ class ReturnReport(models.Model):
             s.sale_id,
             s.date,
             s.partner_id,  
-            s.user_id, 
-            s.reason_id,
-            s.ticket_id,      
+            s.user_id,       
             s.id %s
         """ % (groupby)
 
