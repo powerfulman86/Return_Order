@@ -241,7 +241,7 @@ class ReturnOrder(models.Model):
 
                     self.env['account.move.line'].with_context(check_move_validity=False).create({
                         'move_id': move_id.id,
-                        'return_id': self.id,
+                        # 'return_id': self.id,
                         'name': line.product_id.name,
                         'account_id': line.product_id.categ_id.quarantine_store_account_id.id,
                         'credit': line.product_id.standard_price,
@@ -249,7 +249,7 @@ class ReturnOrder(models.Model):
                     })
                     self.env['account.move.line'].with_context(check_move_validity=False).create({
                         'move_id': move_id.id,
-                        'return_id': self.id,
+                        # 'return_id': self.id,
                         'name': line.product_id.name,
                         'account_id': line.product_id.categ_id.property_stock_account_output_categ_id.id,
                         'credit': 0.0,
@@ -281,7 +281,7 @@ class ReturnOrder(models.Model):
                         all_commission += (related_partner_id.commission / 100) * line.price_subtotal
             if all_commission > 0:
                 mv2 = self.env['account.move'].create({
-                    'return_id': self.id,
+                    # 'return_id': self.id,
                     'journal_id': journal_id.id,
                     'type': 'entry',
                     'partner_id': rec.partner_id.id,
@@ -289,7 +289,7 @@ class ReturnOrder(models.Model):
                 })
                 c = self.env['account.move.line'].with_context(check_move_validity=False).create({
                     'move_id': mv2.id,
-                    'return_id': self.id,
+                    # 'return_id': self.id,
                     'name': "Commission Liability",
                     'account_id': int(
                         self.env['ir.config_parameter'].sudo().get_param('base_setup.liability_account_id')),
@@ -300,7 +300,7 @@ class ReturnOrder(models.Model):
                     if line.celebrity_id.is_sales_channel is True and line.celebrity_id.channel_type == "2" and line.product_id.type == "product":
                         x = self.env['account.move.line'].with_context(check_move_validity=False).create({
                             'move_id': mv2.id,
-                            'return_id': self.id,
+                            # 'return_id': self.id,
                             'name': "distribute Commission for " + line.celebrity_id.name,
                             'account_id': line.celebrity_id.liability_account_id.id,
                             'credit': 0.0,
@@ -311,7 +311,7 @@ class ReturnOrder(models.Model):
                         if related_partner_id:
                             y = self.env['account.move.line'].with_context(check_move_validity=False).create({
                                 'move_id': mv2.id,
-                                'return_id': self.id,
+                                # 'return_id': self.id,
                                 'name': "distribute Commission for " + related_partner_id.partner_id.name,
                                 'account_id': related_partner_id.partner_id.liability_account_id.id,
                                 'credit': 0.0,
@@ -334,7 +334,7 @@ class ReturnOrder(models.Model):
                 if line.product_id.type == 'service':
                     self.env['account.move.line'].with_context(check_move_validity=False).create({
                         'move_id': move_id.id,
-                        'return_id': self.id,
+                        # 'return_id': self.id,
                         'name': line.product_id.name,
                         'account_id': line.product_id.property_account_income_id.id if line.product_id.property_account_income_id else line.product_id.categ_id.property_account_income_categ_id.id,
                         'debit': line.price_subtotal,
@@ -342,7 +342,7 @@ class ReturnOrder(models.Model):
                     })
                     self.env['account.move.line'].with_context(check_move_validity=False).create({
                         'move_id': move_id.id,
-                        'return_id': self.id,
+                        # 'return_id': self.id,
                         'name': 'Expenses Account',
                         'account_id': int(
                             rec.env['ir.config_parameter'].sudo().get_param('base_setup.expense_account_id')),
