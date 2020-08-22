@@ -18,7 +18,6 @@ class DeliveryMethodWizard(models.TransientModel):
         for rec in self:
             carriers = self.env['delivery.carrier'].search(
                 ['|', ('company_id', '=', False), ('company_id', '=', rec.order_id.company_id.id)])
-
             rec.available_carrier_ids = carriers.available_carriers(
                 rec.return_id.partner_id) if rec.partner_id else carriers
 
