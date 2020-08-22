@@ -11,8 +11,9 @@
                         <group>
                             <field name="return_id" invisible="1" />
                             <field name="carrier_set" invisible="1" />
-                            <field name="available_carrier_ids" invisible="0" />
-                            <field name="carrier_id" options="{'no_create': True}" />
+                            <field name="partner_id" invisible="1" />
+                            <field name="available_carrier_ids" invisible="1" />
+                            <field name="carrier_id" options="{'no_create': True}" domain="[('id', 'in', available_carrier_ids)]"/>
                             <field name="cost"  />
                         </group>
                     </group>

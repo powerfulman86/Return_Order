@@ -26,6 +26,7 @@ class ReturnOrder(models.Model):
     return_line_ids = fields.One2many(comodel_name="return.order.line", inverse_name="return_id",
                                       track_visibility='always')
     picking_ids = fields.One2many(comodel_name="stock.picking", inverse_name="return_id", track_visibility='always')
+    company_id = fields.Many2one('res.company', 'Company', required=True, index=True, default=lambda self: self.env.company)
     state = fields.Selection([
         ('draft', 'Draft RFO'),
         ('approved', 'Approved'),

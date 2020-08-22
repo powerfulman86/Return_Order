@@ -156,6 +156,7 @@
                                 <field name="delivery_id" options="{'no_create':True}"
                                        attrs="{'readonly': [('state', '!=', 'draft' )]}"/>
                                 <field name="delivery_date"/>
+                                <field name="company_id" invisible="1"/>
                                 <field name="with_refund"
                                        attrs="{'invisible': [('state', '!=', 'approved' )]}"/>
                             </group>
