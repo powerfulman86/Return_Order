@@ -10,6 +10,17 @@ class DeliveryMethodWizard(models.TransientModel):
     carrier_id = fields.Many2one('delivery.carrier', 'Carrier')
     cost = fields.Float(string="Cost")
     carrier_set = fields.Boolean(string="", compute='_compute_carrier_set')
+    available_carrier_ids = fields.Many2many("delivery.carrier",
+                                             string="Available Carriers")
+
+    @api.depends('partner_id')
+    def _compute_available_carrier(self):
+        for rec in self:
+            carriers = self.env['delivery.carrier'].search(
+                ['|', ('company_id', '=', False), ('company_id', '=', rec.order_id.company_id.id)])
+
+            rec.available_carrier_ids = carriers.available_carriers(
+                rec.return_id.partner_id) if rec.partner_id else carriers
 
     @api.depends('return_id')
     def _compute_carrier_set(self):

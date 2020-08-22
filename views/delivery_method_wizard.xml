@@ -11,6 +11,7 @@
                         <group>
                             <field name="return_id" invisible="1" />
                             <field name="carrier_set" invisible="1" />
+                            <field name="available_carrier_ids" invisible="0" />
                             <field name="carrier_id" options="{'no_create': True}" />
                             <field name="cost"  />
                         </group>

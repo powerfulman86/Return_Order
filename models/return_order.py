@@ -48,6 +48,7 @@ class ReturnOrder(models.Model):
     partner_shipping_id = fields.Many2one(comodel_name="res.partner", string="Pick UP Address")
     amount_total = fields.Float(string="Total",  compute="_compute_total")
 
+
     @api.depends('return_line_ids')
     def _compute_total(self):
         for rec in self:
