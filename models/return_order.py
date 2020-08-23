@@ -137,7 +137,7 @@ class ReturnOrder(models.Model):
 
     def action_approve(self):
         for rec in self:
-            if not rec.env['ir.config_parameter'].sudo().get_param('base_setup.expense_account_id'):
+            if not rec.env['ir.config_parameter'].sudo().get_param('base_setup.so_expense_acc_id'):
                 raise ValidationError(_("Please Enter Celebrity Expense Account in settings"))
             # if not rec.env['ir.config_parameter'].sudo().get_param('base_setup.receipt_warehouse_id'):
             #     raise ValidationError(_("Please Enter Warehouse receipt in settings"))
@@ -212,7 +212,7 @@ class ReturnOrder(models.Model):
                             'return_id': self.id,
                             'name': 'Expenses Account',
                             'account_id': int(
-                                rec.env['ir.config_parameter'].sudo().get_param('base_setup.expense_account_id')),
+                                rec.env['ir.config_parameter'].sudo().get_param('base_setup.so_expense_acc_id')),
                             'credit': 0.0,
                             'debit': line.price_subtotal,
                         })
@@ -347,7 +347,7 @@ class ReturnOrder(models.Model):
                         # 'return_id': self.id,
                         'name': 'Expenses Account',
                         'account_id': int(
-                            rec.env['ir.config_parameter'].sudo().get_param('base_setup.expense_account_id')),
+                            rec.env['ir.config_parameter'].sudo().get_param('base_setup.so_expense_acc_id')),
                         'debit': 0.0,
                         'credit': line.price_subtotal,
                     })
