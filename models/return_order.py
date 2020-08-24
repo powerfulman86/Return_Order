@@ -9,6 +9,12 @@ class ReturnOrder(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = "Return Order"
 
+    @api.model
+    def _default_warehouse_id(self):
+        company = self.env.company.id
+        warehouse_ids = self.env['stock.warehouse'].search([('company_id', '=', company)], limit=1)
+        return warehouse_ids
+
     name = fields.Char(string="code", track_visibility='always')
     date = fields.Datetime(string="", required=False, default=fields.Datetime.now)
     sale_id = fields.Many2one(comodel_name="sale.order", string="Sale Order", required=True, track_visibility='always')
@@ -18,7 +24,8 @@ class ReturnOrder(models.Model):
     customer_ref = fields.Char(compute="_compute_partner_code")
     delivery_id = fields.Many2one(comodel_name="stock.picking", string="delivery number", required=True,
                                   track_visibility='always')
-    warehouse_id = fields.Many2one(comodel_name="stock.warehouse", string="Warehouse receipt", required=True)
+    warehouse_id = fields.Many2one(comodel_name="stock.warehouse", string="Warehouse receipt", required=True,
+                                   default=_default_warehouse_id, check_company=True)
     user_id = fields.Many2one('res.users', string='Responsible', default=lambda self: self.env.user)
     delivery_date = fields.Datetime(string="Delivery Date", related='delivery_id.scheduled_date')
     reason_id = fields.Many2one(comodel_name="return.reason", string="reason to return", track_visibility='always')
@@ -48,7 +55,6 @@ class ReturnOrder(models.Model):
     carrier_id = fields.Many2one('delivery.carrier', 'Carrier')
     partner_shipping_id = fields.Many2one(comodel_name="res.partner", string="Pick UP Address")
     amount_total = fields.Float(string="Total",store=1,  compute="_compute_total")
-
 
     @api.depends('return_line_ids')
     def _compute_total(self):
