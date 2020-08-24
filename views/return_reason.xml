@@ -85,8 +85,6 @@
                   groups="Return_Order.return_group_supervisor,Return_Order.return_group_manager"/>
         <!-- Action Must be Change-->
         <menuitem id="menu_return_reporting" name="Reporting" parent="menu_return_root"  sequence="3"/>
-        <menuitem id="menu_return_reporting_id" name="Return Reasons" parent="menu_return_reporting"
-                  action="action_return_reason_view" />
 
         <menuitem id="menu_return_configuration" name="configuration" parent="menu_return_root" sequence="4"/>
         <menuitem id="menu_return_configuration_settings" name="Settings" action="return_order_config"

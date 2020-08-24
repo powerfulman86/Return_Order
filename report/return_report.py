@@ -24,6 +24,7 @@ class ReturnReport(models.Model):
     customer_ref = fields.Char(compute="_compute_partner_code")
     delivery_id = fields.Many2one(comodel_name="stock.picking", string="delivery number", required=True,
                                   track_visibility='always')
+    return_id = fields.Many2one('return.order', 'Order', readonly=True)
     user_id = fields.Many2one('res.users', string='Responsible', default=lambda self: self.env.user)
     # delivery_date = fields.Datetime(string="Delivery Date", related='delivery_id.scheduled_date')
     reason_id = fields.Many2one(comodel_name="return.reason", string="reason to return", track_visibility='always')
@@ -42,6 +43,8 @@ class ReturnReport(models.Model):
 
     invoices_count = fields.Integer('Credit Notes Count', compute='_compute_credit_notes_count')
     invoice_ids = fields.Many2many('account.move', string='Credit Notes')
+    amount_total = fields.Float(string="Total")
+
 
     def _query(self, with_clause='', fields={}, groupby='', from_clause=''):
         with_ = ("WITH %s" % with_clause) if with_clause else ""
@@ -60,6 +63,7 @@ class ReturnReport(models.Model):
             s.ticket_id as ticket_id, 
             s.delivery_id as delivery_id, 
             s.with_refund as with_refund, 
+            s.amount_total as amount_total,
             s.state as state
         """
 

@@ -47,7 +47,7 @@ class ReturnOrder(models.Model):
     is_all_service = fields.Boolean(string="all services", compute="_count_service_product")
     carrier_id = fields.Many2one('delivery.carrier', 'Carrier')
     partner_shipping_id = fields.Many2one(comodel_name="res.partner", string="Pick UP Address")
-    amount_total = fields.Float(string="Total",  compute="_compute_total")
+    amount_total = fields.Float(string="Total",store=1,  compute="_compute_total")
 
 
     @api.depends('return_line_ids')
