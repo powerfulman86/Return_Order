@@ -11,9 +11,13 @@ class ReturnOrder(models.Model):
 
     @api.model
     def _default_warehouse_id(self):
-        company = self.env.company.id
-        warehouse_ids = self.env['stock.warehouse'].search([('company_id', '=', company)], limit=1)
-        return warehouse_ids
+        # company = self.env.company.id
+        # warehouse_ids = self.env['stock.warehouse'].search([('company_id', '=', company)], limit=1)
+        warehouse = self.env['ir.config_parameter'].sudo().get_param('base_setup.receipt_warehouse_id')
+        if warehouse:
+            warehouse_id = self.env['stock.warehouse'].browse(int(warehouse))
+
+            return warehouse_id
 
     name = fields.Char(string="code", track_visibility='always')
     date = fields.Datetime(string="", required=False, default=fields.Datetime.now)

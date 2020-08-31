@@ -38,7 +38,6 @@ class ReturnReport(models.Model):
         ('approve', 'return order'),
     ], 'Order Status', default='draft', copy=False, readonly=True, track_visibility='always')
     picking_count = fields.Integer(string="Picking Count", compute='_compute_picking_count')
-    receipt_count = fields.Integer(string="")
     with_refund = fields.Boolean(string="Refund", )
 
     invoices_count = fields.Integer('Credit Notes Count', compute='_compute_credit_notes_count')
