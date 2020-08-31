@@ -9,6 +9,16 @@ class ReturnOrder(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = "Return Order"
 
+    @api.model
+    def _default_warehouse_id(self):
+        # company = self.env.company.id
+        # warehouse_ids = self.env['stock.warehouse'].search([('company_id', '=', company)], limit=1)
+        warehouse = self.env['ir.config_parameter'].sudo().get_param('base_setup.receipt_warehouse_id')
+        if warehouse:
+            warehouse_id = self.env['stock.warehouse'].browse(int(warehouse))
+
+            return warehouse_id
+
     name = fields.Char(string="code", track_visibility='always')
     date = fields.Datetime(string="", required=False, default=fields.Datetime.now)
     sale_id = fields.Many2one(comodel_name="sale.order", string="Sale Order", required=True, track_visibility='always')
@@ -18,7 +28,8 @@ class ReturnOrder(models.Model):
     customer_ref = fields.Char(compute="_compute_partner_code")
     delivery_id = fields.Many2one(comodel_name="stock.picking", string="delivery number", required=True,
                                   track_visibility='always')
-    warehouse_id = fields.Many2one(comodel_name="stock.warehouse", string="Warehouse receipt", required=True)
+    warehouse_id = fields.Many2one(comodel_name="stock.warehouse", string="Warehouse receipt", required=True,
+                                   default=_default_warehouse_id, check_company=True)
     user_id = fields.Many2one('res.users', string='Responsible', default=lambda self: self.env.user)
     delivery_date = fields.Datetime(string="Delivery Date", related='delivery_id.scheduled_date')
     reason_id = fields.Many2one(comodel_name="return.reason", string="reason to return", track_visibility='always')
@@ -26,6 +37,7 @@ class ReturnOrder(models.Model):
     return_line_ids = fields.One2many(comodel_name="return.order.line", inverse_name="return_id",
                                       track_visibility='always')
     picking_ids = fields.One2many(comodel_name="stock.picking", inverse_name="return_id", track_visibility='always')
+    company_id = fields.Many2one('res.company', 'Company', required=True, index=True, default=lambda self: self.env.company)
     state = fields.Selection([
         ('draft', 'Draft RFO'),
         ('approved', 'Approved'),
@@ -46,6 +58,12 @@ class ReturnOrder(models.Model):
     is_all_service = fields.Boolean(string="all services", compute="_count_service_product")
     carrier_id = fields.Many2one('delivery.carrier', 'Carrier')
     partner_shipping_id = fields.Many2one(comodel_name="res.partner", string="Pick UP Address")
+    amount_total = fields.Float(string="Total",store=1,  compute="_compute_total")
+
+    @api.depends('return_line_ids')
+    def _compute_total(self):
+        for rec in self:
+            rec.amount_total = sum(x.price_subtotal for x in rec.return_line_ids)
 
     @api.depends('return_line_ids')
     def _count_service_product(self):
@@ -129,8 +147,8 @@ class ReturnOrder(models.Model):
 
     def action_approve(self):
         for rec in self:
-            if not rec.env['ir.config_parameter'].sudo().get_param('base_setup.expense_account_id'):
-                raise ValidationError(_("Please Enter Celebrity Expense Account in settings"))
+            if not rec.env['ir.config_parameter'].sudo().get_param('base_setup.return_expense_account_id'):
+                raise ValidationError(_("Please Enter Expense Account in settings"))
             # if not rec.env['ir.config_parameter'].sudo().get_param('base_setup.receipt_warehouse_id'):
             #     raise ValidationError(_("Please Enter Warehouse receipt in settings"))
             picking_type_id = self.env['stock.picking.type'].search([('warehouse_id', '=', rec.warehouse_id.id),
@@ -204,7 +222,7 @@ class ReturnOrder(models.Model):
                             'return_id': self.id,
                             'name': 'Expenses Account',
                             'account_id': int(
-                                rec.env['ir.config_parameter'].sudo().get_param('base_setup.expense_account_id')),
+                                rec.env['ir.config_parameter'].sudo().get_param('base_setup.return_expense_account_id')),
                             'credit': 0.0,
                             'debit': line.price_subtotal,
                         })
@@ -235,7 +253,7 @@ class ReturnOrder(models.Model):
 
                     self.env['account.move.line'].with_context(check_move_validity=False).create({
                         'move_id': move_id.id,
-                        'return_id': self.id,
+                        # 'return_id': self.id,
                         'name': line.product_id.name,
                         'account_id': line.product_id.categ_id.quarantine_store_account_id.id,
                         'credit': line.product_id.standard_price,
@@ -243,7 +261,7 @@ class ReturnOrder(models.Model):
                     })
                     self.env['account.move.line'].with_context(check_move_validity=False).create({
                         'move_id': move_id.id,
-                        'return_id': self.id,
+                        # 'return_id': self.id,
                         'name': line.product_id.name,
                         'account_id': line.product_id.categ_id.property_stock_account_output_categ_id.id,
                         'credit': 0.0,
@@ -275,7 +293,7 @@ class ReturnOrder(models.Model):
                         all_commission += (related_partner_id.commission / 100) * line.price_subtotal
             if all_commission > 0:
                 mv2 = self.env['account.move'].create({
-                    'return_id': self.id,
+                    # 'return_id': self.id,
                     'journal_id': journal_id.id,
                     'type': 'entry',
                     'partner_id': rec.partner_id.id,
@@ -283,7 +301,7 @@ class ReturnOrder(models.Model):
                 })
                 c = self.env['account.move.line'].with_context(check_move_validity=False).create({
                     'move_id': mv2.id,
-                    'return_id': self.id,
+                    # 'return_id': self.id,
                     'name': "Commission Liability",
                     'account_id': int(
                         self.env['ir.config_parameter'].sudo().get_param('base_setup.liability_account_id')),
@@ -294,7 +312,7 @@ class ReturnOrder(models.Model):
                     if line.celebrity_id.is_sales_channel is True and line.celebrity_id.channel_type == "2" and line.product_id.type == "product":
                         x = self.env['account.move.line'].with_context(check_move_validity=False).create({
                             'move_id': mv2.id,
-                            'return_id': self.id,
+                            # 'return_id': self.id,
                             'name': "distribute Commission for " + line.celebrity_id.name,
                             'account_id': line.celebrity_id.liability_account_id.id,
                             'credit': 0.0,
@@ -305,7 +323,7 @@ class ReturnOrder(models.Model):
                         if related_partner_id:
                             y = self.env['account.move.line'].with_context(check_move_validity=False).create({
                                 'move_id': mv2.id,
-                                'return_id': self.id,
+                                # 'return_id': self.id,
                                 'name': "distribute Commission for " + related_partner_id.partner_id.name,
                                 'account_id': related_partner_id.partner_id.liability_account_id.id,
                                 'credit': 0.0,
@@ -328,7 +346,7 @@ class ReturnOrder(models.Model):
                 if line.product_id.type == 'service':
                     self.env['account.move.line'].with_context(check_move_validity=False).create({
                         'move_id': move_id.id,
-                        'return_id': self.id,
+                        # 'return_id': self.id,
                         'name': line.product_id.name,
                         'account_id': line.product_id.property_account_income_id.id if line.product_id.property_account_income_id else line.product_id.categ_id.property_account_income_categ_id.id,
                         'debit': line.price_subtotal,
@@ -336,10 +354,10 @@ class ReturnOrder(models.Model):
                     })
                     self.env['account.move.line'].with_context(check_move_validity=False).create({
                         'move_id': move_id.id,
-                        'return_id': self.id,
+                        # 'return_id': self.id,
                         'name': 'Expenses Account',
                         'account_id': int(
-                            rec.env['ir.config_parameter'].sudo().get_param('base_setup.expense_account_id')),
+                            rec.env['ir.config_parameter'].sudo().get_param('base_setup.return_expense_account_id')),
                         'debit': 0.0,
                         'credit': line.price_subtotal,
                     })
