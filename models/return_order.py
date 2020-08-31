@@ -147,8 +147,8 @@ class ReturnOrder(models.Model):
 
     def action_approve(self):
         for rec in self:
-            if not rec.env['ir.config_parameter'].sudo().get_param('base_setup.so_expense_acc_id'):
-                raise ValidationError(_("Please Enter Celebrity Expense Account in settings"))
+            if not rec.env['ir.config_parameter'].sudo().get_param('base_setup.return_expense_account_id'):
+                raise ValidationError(_("Please Enter Expense Account in settings"))
             # if not rec.env['ir.config_parameter'].sudo().get_param('base_setup.receipt_warehouse_id'):
             #     raise ValidationError(_("Please Enter Warehouse receipt in settings"))
             picking_type_id = self.env['stock.picking.type'].search([('warehouse_id', '=', rec.warehouse_id.id),
@@ -222,7 +222,7 @@ class ReturnOrder(models.Model):
                             'return_id': self.id,
                             'name': 'Expenses Account',
                             'account_id': int(
-                                rec.env['ir.config_parameter'].sudo().get_param('base_setup.so_expense_acc_id')),
+                                rec.env['ir.config_parameter'].sudo().get_param('base_setup.return_expense_account_id')),
                             'credit': 0.0,
                             'debit': line.price_subtotal,
                         })
@@ -357,7 +357,7 @@ class ReturnOrder(models.Model):
                         # 'return_id': self.id,
                         'name': 'Expenses Account',
                         'account_id': int(
-                            rec.env['ir.config_parameter'].sudo().get_param('base_setup.so_expense_acc_id')),
+                            rec.env['ir.config_parameter'].sudo().get_param('base_setup.return_expense_account_id')),
                         'debit': 0.0,
                         'credit': line.price_subtotal,
                     })
