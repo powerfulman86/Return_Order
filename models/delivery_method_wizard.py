@@ -5,6 +5,7 @@ from odoo import models, fields, api, _
 
 class DeliveryMethodWizard(models.TransientModel):
     _name = 'delivery.method.wizard'
+    _description = 'Return Delivery Methods'
 
     return_id = fields.Many2one(comodel_name="return.order")
     carrier_id = fields.Many2one('delivery.carrier', 'Carrier')
